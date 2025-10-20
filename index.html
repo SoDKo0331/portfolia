@@ -1,794 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sodbayar | Developer</title>
+    <title>Sodbayar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://via.placeholder.com/32?text=S">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* Animated background particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: linear-gradient(45deg, #64ffda, #7c4dff);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-            box-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
-        }
-
-        @keyframes float {
-            0%, 100% { 
-                transform: translateY(0px) translateX(0px) rotate(0deg); 
-                opacity: 0.5; 
-            }
-            25% { 
-                transform: translateY(-30px) translateX(20px) rotate(90deg); 
-                opacity: 1; 
-            }
-            50% { 
-                transform: translateY(-10px) translateX(-20px) rotate(180deg); 
-                opacity: 0.8; 
-            }
-            75% { 
-                transform: translateY(-40px) translateX(10px) rotate(270deg); 
-                opacity: 1; 
-            }
-        }
-
-        /* Main Container */
         .container {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
         }
 
-        /* Profile Section */
-        .profile-section {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            animation: fadeInUp 0.8s ease-out;
+        .profile-img {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
-        .profile-image-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 1.5rem;
+        .profile-img:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #64ffda 0%, #7c4dff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: 700;
-            color: #0a192f;
-            box-shadow: 0 10px 40px rgba(100, 255, 218, 0.4);
+        .link-btn {
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: perspective(600px) rotateX(0deg) rotateY(0deg);
         }
 
-        .profile-image::before {
+        .link-btn:before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 3s infinite;
+            background: linear-gradient(135deg, #7e22ce 0%, #3b82f6 100%);
+            transition: left 0.4s ease;
+            z-index: 0;
         }
 
-        @keyframes shimmer {
-            0% { left: -100%; }
-            50%, 100% { left: 100%; }
+        .link-btn:hover:before {
+            left: 0;
         }
 
-        .profile-image:hover {
-            transform: scale(1.05) rotate(5deg);
-            box-shadow: 0 15px 50px rgba(100, 255, 218, 0.6);
+        .link-btn:hover span {
+            color: white;
         }
 
-        .username {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+        .link-btn:hover {
+            transform: perspective(600px) rotateX(3deg) rotateY(3deg);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
         }
 
-        .bio {
-            font-size: 1rem;
-            color: #8892b0;
-            margin-bottom: 0.5rem;
-            line-height: 1.6;
-        }
-
-        .location {
-            font-size: 0.9rem;
-            color: #64ffda;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Links Container */
-        .links-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            animation: fadeInUp 1s ease-out 0.2s both;
-        }
-
-        /* Link Card */
-        .link-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(100, 255, 218, 0.15);
-            border-radius: 16px;
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+        .social-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
 
-        .link-card::before {
+        .social-btn:before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.1), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(135deg, #7e22ce 0%, #3b82f6 100%);
+            transition: left 0.4s ease;
+            z-index: 0;
         }
 
-        .link-card:hover::before {
-            left: 100%;
+        .social-btn:hover:before {
+            left: 0;
         }
 
-        .link-card:hover {
-            background: rgba(100, 255, 218, 0.08);
-            border-color: rgba(100, 255, 218, 0.4);
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(100, 255, 218, 0.25);
+        .social-btn:hover i {
+            color: white;
         }
 
-        .link-card:active {
-            transform: translateY(-2px) scale(1.01);
+        .social-btn:hover {
+            transform: scale(1.1) translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        .link-icon {
-            font-size: 1.75rem;
-            min-width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(100, 255, 218, 0.15), rgba(124, 77, 255, 0.15));
-            border-radius: 12px;
-            border: 1px solid rgba(100, 255, 218, 0.3);
-            transition: all 0.3s ease;
+        .gradient-animate {
+            background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
+            background-size: 200%;
+            animation: gradientFlow 8s ease infinite;
         }
 
-        .link-card:hover .link-icon {
-            transform: scale(1.1) rotate(-5deg);
-            background: linear-gradient(135deg, rgba(100, 255, 218, 0.25), rgba(124, 77, 255, 0.25));
-            box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .link-content {
-            flex: 1;
-            text-align: left;
-        }
-
-        .link-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 0.25rem;
-            transition: color 0.3s ease;
-        }
-
-        .link-card:hover .link-title {
-            color: #64ffda;
-        }
-
-        .link-description {
-            font-size: 0.9rem;
-            color: #8892b0;
-            margin: 0;
-        }
-
-        .link-arrow {
-            font-size: 1.25rem;
-            color: #64ffda;
-            opacity: 0;
-            transform: translateX(-10px);
-            transition: all 0.3s ease;
-        }
-
-        .link-card:hover .link-arrow {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* Skills Section */
-        .skills-section {
-            width: 100%;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(100, 255, 218, 0.1);
-            animation: fadeInUp 1.2s ease-out 0.4s both;
-        }
-
-        .skills-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #64ffda;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .skill-category {
-            background: rgba(100, 255, 218, 0.03);
-            border: 1px solid rgba(100, 255, 218, 0.15);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .skill-category:hover {
-            background: rgba(100, 255, 218, 0.05);
-            border-color: rgba(100, 255, 218, 0.3);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.15);
-        }
-
-        .skill-category-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .skill-icon {
-            font-size: 1.25rem;
-        }
-
-        .skill-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-        }
-
-        .skill-tag {
-            background: rgba(124, 77, 255, 0.15);
-            color: #a78bfa;
-            padding: 0.4rem 0.9rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: 1px solid rgba(124, 77, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .skill-tag:hover {
-            background: rgba(124, 77, 255, 0.25);
-            color: #c4b5fd;
-            transform: scale(1.08) rotate(2deg);
-            box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(100, 255, 218, 0.1);
-            text-align: center;
-            color: #8892b0;
-            font-size: 0.9rem;
-            animation: fadeInUp 1.4s ease-out 0.6s both;
-        }
-
-        .footer-text {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-heart {
-            color: #ff6b6b;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.1); }
-            50% { transform: scale(1); }
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Scroll to top button */
-        .scroll-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #64ffda, #7c4dff);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(100, 255, 218, 0.4);
-            z-index: 1000;
-        }
-
-        .scroll-top.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .scroll-top:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(100, 255, 218, 0.6);
-        }
-
-        .scroll-top::before {
-            content: '↑';
-            font-size: 1.5rem;
-            color: #0a192f;
-            font-weight: 700;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        @media (max-width: 640px) {
             .container {
-                padding: 1.5rem 1rem;
+                padding: 1.5rem;
             }
 
-            .profile-image-wrapper {
+            .profile-img {
                 width: 100px;
                 height: 100px;
             }
 
-            .profile-image {
-                font-size: 2.5rem;
+            .profile h1 {
+                font-size: 1.75rem;
             }
 
-            .username {
-                font-size: 1.5rem;
+            .link-btn {
+                padding: 0.875rem 1.25rem;
             }
-
-            .link-card {
-                padding: 1rem 1.25rem;
-            }
-
-            .link-icon {
-                min-width: 48px;
-                height: 48px;
-                font-size: 1.5rem;
-            }
-
-            .link-title {
-                font-size: 1rem;
-            }
-
-            .link-description {
-                font-size: 0.85rem;
-            }
-
-            .skills-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .profile-image-wrapper {
-                width: 90px;
-                height: 90px;
-            }
-
-            .profile-image {
-                font-size: 2rem;
-            }
-
-            .username {
-                font-size: 1.35rem;
-            }
-
-            .bio {
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
         }
     </style>
 </head>
-<body>
-    <!-- Animated background particles -->
-    <div class="particles" id="particles"></div>
-
-    <!-- Scroll to top button -->
-    <div class="scroll-top" id="scrollTop"></div>
-
-    <!-- Main Container -->
-    <div class="container loading">
-        <!-- Profile Section -->
-        <div class="profile-section">
-            <div class="profile-image-wrapper">
-                <div class="profile-image">S</div>
-            </div>
-            <h1 class="username">@sodbayar</h1>
-            <p class="bio">love in tech</p>
+<body class="flex items-center justify-center p-4 sm:p-6 gradient-animate">
+    <div class="container max-w-2xl w-full rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl">
+        <div class="profile text-center mb-10">
+            <img src="https://via.placeholder.com/120?text=Setups+AI+Logo" class="profile-img w-32 h-32 rounded-full mx-auto mb-5" alt="Setups AI Logo">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Setups AI</h1>
+            <p class="text-gray-200 text-base sm:text-lg leading-relaxed mt-2">Манай бүх холбоосууд нэг дор. Таны хэрэгцээт контентыг хүргэнэ.</p>
         </div>
 
-        <!-- Links Container -->
-        <div class="links-container">
-            <!-- Email Link -->
-            <a href="mailto:ssodko245@gmail.com" class="link-card">
-                <div class="link-icon">📧</div>
-                <div class="link-content">
-                    <div class="link-title">Email Me</div>
-                    <div class="link-description">ssodko245@gmail.com</div>
-                </div>
-                <div class="link-arrow">→</div>
+        <div class="links flex flex-col gap-4">
+            <a href="https://setups.ai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fas fa-globe link-icon mr-3 text-xl"></i>
+                <span>Вэбсайт</span>
             </a>
-
-            <!-- GitHub Link -->
-            <a href="https://github.com/sodbayar" class="link-card" target="_blank" rel="noopener noreferrer">
-                <div class="link-icon">💻</div>
-                <div class="link-content">
-                    <div class="link-title">GitHub</div>
-                    <div class="link-description">Check out my code</div>
-                </div>
-                <div class="link-arrow">→</div>
+            <a href="https://instagram.com/setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fab fa-instagram link-icon mr-3 text-xl"></i>
+                <span>Instagram</span>
             </a>
-
-            <!-- LinkedIn Link -->
-            <a href="https://linkedin.com/in/sodbayar" class="link-card" target="_blank" rel="noopener noreferrer">
-                <div class="link-icon">💼</div>
-                <div class="link-content">
-                    <div class="link-title">LinkedIn</div>
-                    <div class="link-description">Let's connect professionally</div>
-                </div>
-                <div class="link-arrow">→</div>
+            <a href="https://youtube.com/@setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fab fa-youtube link-icon mr-3 text-xl"></i>
+                <span>YouTube</span>
             </a>
-
+            <a href="https://tiktok.com/@setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fab fa-tiktok link-icon mr-3 text-xl"></i>
+                <span>TikTok</span>
+            </a>
+            <a href="https://linkedin.com/company/setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fab fa-linkedin link-icon mr-3 text-xl"></i>
+                <span>LinkedIn</span>
+            </a>
+            <a href="mailto:contact@setups.ai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
+                <i class="fas fa-envelope link-icon mr-3 text-xl"></i>
+                <span>Холбоо барих</span>
+            </a>
         </div>
 
-        <!-- Skills Section -->
-        <div class="skills-section">
-            <h2 class="skills-title">⚡ Technical Skills</h2>
-            <div class="skills-grid">
-                <div class="skill-category">
-                    <div class="skill-category-title">
-                        <span class="skill-icon">🎨</span>
-                        Frontend
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag">React</span>
-                        <span class="skill-tag">Next.js</span>
-                        <span class="skill-tag">JavaScript</span>
-                        <span class="skill-tag">TypeScript</span>
-                        <span class="skill-tag">Tailwind CSS</span>
-                        <span class="skill-tag">HTML & CSS</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <div class="skill-category-title">
-                        <span class="skill-icon">⚙️</span>
-                        Backend
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Node.js</span>
-                        <span class="skill-tag">Express</span>
-                        <span class="skill-tag">Python</span>
-                        <span class="skill-tag">PostgreSQL</span>
-                        <span class="skill-tag">MongoDB</span>
-                        <span class="skill-tag">GraphQL</span>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <div class="skill-category-title">
-                        <span class="skill-icon">🚀</span>
-                        DevOps & Tools
-                    </div>
-                    <div class="skill-tags">
-                        <span class="skill-tag">Docker</span>
-                        <span class="skill-tag">Git</span>
-                        <span class="skill-tag">Linux</span>
-                        <span class="skill-tag">CI/CD</span>
-                        <span class="skill-tag">AWS</span>
-                        <span class="skill-tag">Vercel</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p class="footer-text">Made with <span class="footer-heart">♥</span> by Sodbayar</p>
-            <p style="font-size: 0.8rem; color: #64ffda;">&copy; 2025 All Rights Reserved</p>
+        <div class="social-links flex justify-center gap-5 mt-10 pt-8 border-t border-gray-300/30">
+            <a href="https://facebook.com/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://x.com/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="mailto:contact@setups.ai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://t.me/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
+                <i class="fab fa-telegram-plane"></i>
+            </a>
         </div>
     </div>
-
-    <script>
-        // Create animated particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const numberOfParticles = 60;
-            
-            for (let i = 0; i < numberOfParticles; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Scroll to top functionality
-        function setupScrollTop() {
-            const scrollTopBtn = document.getElementById('scrollTop');
-            
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollTopBtn.classList.add('visible');
-                } else {
-                    scrollTopBtn.classList.remove('visible');
-                }
-            });
-
-            scrollTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        }
-
-        // Smooth scroll for anchor links
-        function setupSmoothScroll() {
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    const href = this.getAttribute('href');
-                    if (href !== '#' && href !== '') {
-                        e.preventDefault();
-                        const target = document.querySelector(href);
-                        if (target) {
-                            target.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    }
-                });
-            });
-        }
-
-        // Add ripple effect to link cards
-        function setupRippleEffect() {
-            const linkCards = document.querySelectorAll('.link-card');
-            
-            linkCards.forEach(card => {
-                card.addEventListener('click', function(e) {
-                    const ripple = document.createElement('div');
-                    const rect = this.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    const x = e.clientX - rect.left - size / 2;
-                    const y = e.clientY - rect.top - size / 2;
-                    
-                    ripple.style.width = ripple.style.height = size + 'px';
-                    ripple.style.left = x + 'px';
-                    ripple.style.top = y + 'px';
-                    ripple.style.position = 'absolute';
-                    ripple.style.borderRadius = '50%';
-                    ripple.style.background = 'rgba(100, 255, 218, 0.5)';
-                    ripple.style.transform = 'scale(0)';
-                    ripple.style.animation = 'ripple 0.6s ease-out';
-                    ripple.style.pointerEvents = 'none';
-                    
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 600);
-                });
-            });
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes ripple {
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // Add hover sound effect (optional - commented out)
-        function addHoverSounds() {
-            // Uncomment if you want to add sound effects
-            /*
-            const linkCards = document.querySelectorAll('.link-card');
-            const hoverSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjWM0fPTgjMGHm7A7+OZURE=');
-            
-            linkCards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    hoverSound.currentTime = 0;
-                    hoverSound.play().catch(() => {});
-                });
-            });
-            */
-        }
-
-        // Track link clicks (Analytics placeholder)
-        function trackLinkClicks() {
-            const linkCards = document.querySelectorAll('.link-card');
-            
-            linkCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const linkTitle = this.querySelector('.link-title').textContent;
-                    console.log('Link clicked:', linkTitle);
-                    // Add your analytics tracking code here
-                    // Example: gtag('event', 'click', { 'link_name': linkTitle });
-                });
-            });
-        }
-
-        // Easter egg: Konami code
-        function setupKonamiCode() {
-            const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-            let konamiIndex = 0;
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === konamiCode[konamiIndex]) {
-                    konamiIndex++;
-                    if (konamiIndex === konamiCode.length) {
-                        activateEasterEgg();
-                        konamiIndex = 0;
-                    }
-                } else {
-                    konamiIndex = 0;
-                }
-            });
-        }
-
-        function activateEasterEgg() {
-            document.body.style.animation = 'rainbow 2s linear infinite';
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes rainbow {
-                    0% { filter: hue-rotate(0deg); }
-                    100% { filter: hue-rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            setTimeout(() => {
-                document.body.style.animation = '';
-            }, 5000);
-        }
-
-        // Initialize all features
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            setupScrollTop();
-            setupSmoothScroll();
-            setupRippleEffect();
-            trackLinkClicks();
-            setupKonamiCode();
-            
-            // Remove loading class
-            setTimeout(() => {
-                document.querySelector('.container').classList.remove('loading');
-            }, 100);
-        });
-
-        // Add cursor trail effect
-        let cursorTrail = [];
-        document.addEventListener('mousemove', (e) => {
-            if (cursorTrail.length > 10) {
-                const oldTrail = cursorTrail.shift();
-                oldTrail.remove();
-            }
-
-            const trail = document.createElement('div');
-            trail.style.position = 'fixed';
-            trail.style.width = '6px';
-            trail.style.height = '6px';
-            trail.style.borderRadius = '50%';
-            trail.style.background = 'rgba(100, 255, 218, 0.5)';
-            trail.style.left = e.clientX + 'px';
-            trail.style.top = e.clientY + 'px';
-            trail.style.pointerEvents = 'none';
-            trail.style.zIndex = '9999';
-            trail.style.transition = 'all 0.5s ease';
-            
-            document.body.appendChild(trail);
-            cursorTrail.push(trail);
-
-            setTimeout(() => {
-                trail.style.opacity = '0';
-                trail.style.transform = 'scale(0)';
-            }, 10);
-        });
-    </script>
 </body>
 </html>
