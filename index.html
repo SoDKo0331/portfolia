@@ -1,178 +1,533 @@
-<!DOCTYPE html>
-<html lang="mn">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sodbayar</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="https://via.placeholder.com/32?text=S">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-        body {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            min-height: 100vh;
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
-            transition: all 0.4s ease;
-        }
-
-        .profile-img {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        .profile-img:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .link-btn {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: perspective(600px) rotateX(0deg) rotateY(0deg);
-        }
-
-        .link-btn:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #7e22ce 0%, #3b82f6 100%);
-            transition: left 0.4s ease;
-            z-index: 0;
-        }
-
-        .link-btn:hover:before {
-            left: 0;
-        }
-
-        .link-btn:hover span {
-            color: white;
-        }
-
-        .link-btn:hover {
-            transform: perspective(600px) rotateX(3deg) rotateY(3deg);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-btn {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-btn:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #7e22ce 0%, #3b82f6 100%);
-            transition: left 0.4s ease;
-            z-index: 0;
-        }
-
-        .social-btn:hover:before {
-            left: 0;
-        }
-
-        .social-btn:hover i {
-            color: white;
-        }
-
-        .social-btn:hover {
-            transform: scale(1.1) translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .gradient-animate {
-            background: linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce);
-            background-size: 200%;
-            animation: gradientFlow 8s ease infinite;
-        }
-
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                padding: 1.5rem;
-            }
-
-            .profile-img {
-                width: 100px;
-                height: 100px;
-            }
-
-            .profile h1 {
-                font-size: 1.75rem;
-            }
-
-            .link-btn {
-                padding: 0.875rem 1.25rem;
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Deterministic Wheel Picker (11 → pick 5)</title>
+<style>
+  :root{
+    --bg:#0f1724;
+    --card:#0b1220;
+    --accent:#ffd166;
+    --muted:#9aa6b2;
+    --glass: rgba(255,255,255,0.03);
+    --win:#7DE39B;
+  }
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:linear-gradient(180deg,#071023 0%,var(--bg) 100%);
+    color:#e6eef6;
+    display:flex;
+    gap:18px;
+    min-height:100vh;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px;
+  }
+  .card{
+    background:linear-gradient(180deg,var(--card), #07111a);
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 6px 30px rgba(2,6,23,0.6);
+    width:720px;
+  }
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  h1{font-size:18px;margin:0}
+  small{color:var(--muted);display:block}
+  .layout{display:flex;gap:18px}
+  .left{width:420px}
+  .right{flex:1;min-width:240px}
+  #wheelWrap{position:relative;width:420px;height:420px;margin:6px auto}
+  canvas{width:100%;height:100%;border-radius:999px;display:block;box-shadow:inset 0 6px 20px rgba(0,0,0,0.6)}
+  .pointer{
+    position:absolute;top:6px;left:50%;transform:translateX(-50%);width:0;height:0;
+    border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:24px solid var(--accent);
+    filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+  }
+  .controls{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  label.inline{display:flex;gap:8px;align-items:center}
+  input[type=text], input[type=number], select{
+    background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit;width:100%;
+  }
+  button{
+    background:linear-gradient(180deg,var(--accent), #f3b047);
+    border:0;padding:10px 12px;border-radius:10px;font-weight:600;cursor:pointer;
+  }
+  .names{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+  .nameItem{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;display:flex;align-items:center;gap:8px}
+  .resultList{margin-top:12px;background:rgba(255,255,255,0.01);padding:10px;border-radius:10px;min-height:120px}
+  .winner{color:var(--win);font-weight:700}
+  .smallmuted{color:var(--muted);font-size:12px}
+  footer{margin-top:12px;color:var(--muted);font-size:12px}
+  .modeRow{display:flex;gap:8px;align-items:center}
+  .seedBox{display:flex;gap:8px;align-items:center}
+  .badge{background:rgba(255,255,255,0.04);padding:4px 8px;border-radius:999px;font-size:12px}
+  @media (max-width:880px){body{padding:12px} .card{width:100%} .layout{flex-direction:column} .left{width:100%}}
+</style>
 </head>
-<body class="flex items-center justify-center p-4 sm:p-6 gradient-animate">
-    <div class="container max-w-2xl w-full rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl">
+<body>
+  <div class="card" role="application" aria-label="Deterministic wheel picker">
+    <header>
+      <div>
+        <h1>Wheel picker — 11 children → pick 5</h1>
+        <small>Deterministic (seeded) or manual forced winners. Enter your 11 names below.</small>
+      </div>
+      <div style="margin-left:auto" class="badge">Deterministic / Non-random option</div>
+    </header>
 
-        <div class="links flex flex-col gap-4">
-            <a href="https://setups.ai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fas fa-globe link-icon mr-3 text-xl"></i>
-                <span>Вэбсайт</span>
-            </a>
-            <a href="https://instagram.com/setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fab fa-instagram link-icon mr-3 text-xl"></i>
-                <span>Instagram</span>
-            </a>
-            <a href="https://youtube.com/@setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fab fa-youtube link-icon mr-3 text-xl"></i>
-                <span>YouTube</span>
-            </a>
-            <a href="https://tiktok.com/@setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fab fa-tiktok link-icon mr-3 text-xl"></i>
-                <span>TikTok</span>
-            </a>
-            <a href="https://linkedin.com/company/setupsai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fab fa-linkedin link-icon mr-3 text-xl"></i>
-                <span>LinkedIn</span>
-            </a>
-            <a href="mailto:contact@setups.ai" class="link-btn flex items-center justify-center p-4 bg-white/90 rounded-xl text-gray-800 font-semibold border border-transparent hover:border-indigo-500">
-                <i class="fas fa-envelope link-icon mr-3 text-xl"></i>
-                <span>Холбоо барих</span>
-            </a>
+    <div class="layout">
+      <div class="left">
+        <div id="wheelWrap">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheelCanvas" width="600" height="600"></canvas>
         </div>
 
-        <div class="social-links flex justify-center gap-5 mt-10 pt-8 border-t border-gray-300/30">
-            <a href="https://facebook.com/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://x.com/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
-                <i class="fab fa-x-twitter"></i>
-            </a>
-            <a href="mailto:contact@setups.ai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
-                <i class="fas fa-envelope"></i>
-            </a>
-            <a href="https://t.me/setupsai" class="social-btn w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-indigo-600 text-xl border border-transparent hover:border-indigo-500">
-                <i class="fab fa-telegram-plane"></i>
-            </a>
+        <div class="controls">
+          <div class="modeRow">
+            <label class="inline"><input type="radio" name="mode" value="seed" checked> Deterministic (seed)</label>
+            <label class="inline"><input type="radio" name="mode" value="manual"> Manual (force winners)</label>
+            <div style="margin-left:auto" class="smallmuted">Spins per pick: <strong id="spinsLabel">4</strong></div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <div style="flex:1">
+              <div class="seedBox">
+                <input id="seedInput" type="text" value="my-family-seed-1" aria-label="seed" />
+                <input id="spinCount" type="number" min="1" max="10" value="4" style="width:72px" title="spins" />
+              </div>
+              <div class="smallmuted">Same seed + names → same results. Change seed to change the deterministic order.</div>
+            </div>
+
+            <div style="width:120px">
+              <button id="startBtn">Pick 5</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+            <button id="resetBtn" style="background:#3b3f4a;">Reset</button>
+            <button id="fillExample" style="background:#2b6fb2">Fill example names</button>
+            <div style="margin-left:auto" class="smallmuted">No repeats — winners removed after each pick.</div>
+          </div>
+
         </div>
+      </div>
+
+      <div class="right">
+        <section>
+          <h3 style="margin:0 0 8px 0">Names (11)</h3>
+          <div class="names" id="namesList" aria-live="polite">
+            <!-- name items inserted by JS -->
+          </div>
+
+          <div class="smallmuted" style="margin-top:8px">Manual mode: check the boxes for the exact 5 you want, then press "Pick 5".</div>
+        </section>
+
+        <section style="margin-top:12px">
+          <h3 style="margin:0 0 6px 0">Results</h3>
+          <div class="resultList" id="results" aria-live="polite"></div>
+        </section>
+
+        <footer>
+          Tip: deterministic mode uses a seed-based shuffle (same seed → same order). Manual mode forces chosen names.
+        </footer>
+      </div>
     </div>
+  </div>
+
+<script>
+/*
+  Deterministic Wheel Picker
+  - 11 names expected
+  - pickCount = 5
+  - deterministic shuffle using seed (Mulberry32)
+  - manual mode lets you force winners with checkboxes
+  - wheel drawn on canvas and rotates to land on chosen slices
+*/
+
+// --- Utility: seeded RNG (Mulberry32) ---
+function mulberry32(seed) {
+  // Accept string: convert to 32-bit int
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 16777619) >>> 0;
+  }
+  let state = h;
+  return function() {
+    state |= 0;
+    state = (state + 0x6D2B79F5) >>> 0;
+    var t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// seeded shuffle
+function seededShuffle(arr, seed) {
+  const rnd = mulberry32(seed.toString());
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// --- Wheel drawing ---
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+const size = Math.min(canvas.width, canvas.height);
+const cx = canvas.width/2;
+const cy = canvas.height/2;
+const radius = size*0.45;
+
+let rotationDeg = 0; // current rotation in degrees (CSS applied to canvas parent)
+const wheelWrap = document.getElementById('wheelWrap');
+
+let baseNames = Array.from({length:11}, (_,i)=>`Child ${i+1}`);
+let activeNames = [...baseNames];
+const pickCount = 5;
+
+const colors = [
+  "#ffb4a2","#ffd166","#caffbf","#9bf6ff","#bdb2ff",
+  "#ffc6ff","#f6c6a0","#fca3cc","#b8f2e6","#e0bbfe","#ffe8a1"
+];
+// ensure enough colors
+while(colors.length < 11) colors.push("#ddd");
+
+function drawWheel(names){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const n = names.length;
+  const angle = Math.PI*2 / n;
+  ctx.save();
+  ctx.translate(cx,cy);
+  // draw outer circle (white thin)
+  ctx.beginPath();
+  ctx.arc(0,0,radius + 6,0,Math.PI*2);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.stroke();
+
+  for (let i=0;i<n;i++){
+    const start = -Math.PI/2 + i*angle;
+    const end = start + angle;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,radius,start,end);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+
+    // slices border
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // label
+    ctx.save();
+    ctx.rotate(start + angle/2);
+    ctx.translate(radius*0.6, 0);
+    ctx.rotate(Math.PI/2);
+    ctx.fillStyle = '#07202b';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(names[i], 0, 0);
+    ctx.restore();
+  }
+
+  // center circle
+  ctx.beginPath();
+  ctx.arc(0,0,radius*0.18,0,Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fill();
+  ctx.restore();
+}
+
+// apply CSS transform rotation to canvas element itself for smooth animation
+const canvasEl = canvas;
+
+function applyRotation(deg){
+  rotationDeg = deg % 360;
+  canvasEl.style.transform = `rotate(${rotationDeg}deg)`;
+}
+
+// Map index to angle (so that a slice's center lands under the pointer at top)
+function angleForIndex(index, namesLength){
+  const slice = 360 / namesLength;
+  // slice center angle measured clockwise from top (0 at top)
+  return index * slice + slice/2;
+}
+
+// animate rotation to desired final degree (deg) over duration ms
+function animateTo(finalDeg, duration=2500){
+  const start = performance.now();
+  const initial = rotationDeg;
+  let diff = (finalDeg - initial);
+  // shortest direction
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return new Promise(resolve=>{
+    function step(ts){
+      const t = Math.min(1, (ts - start)/duration);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      applyRotation(initial + diff*eased);
+      if (t < 1) requestAnimationFrame(step);
+      else resolve();
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// spin to bring given index to pointer (top). spins = number of full 360 spins before landing
+async function spinToIndex(index, namesLength, spins=4){
+  const slice = 360 / namesLength;
+  // compute target so that slice center ends at 0deg (top). Our rotation is applied to canvas, so to move slice center to top we rotate by (360 - angleForIndex) plus full spins
+  const target = spins*360 + (360 - angleForIndex(index, namesLength));
+  // animate with slight randomness in duration
+  const duration = 1800 + spins*300;
+  await animateTo(target, duration);
+}
+
+// --- UI & Logic ---
+const namesListEl = document.getElementById('namesList');
+const resultsEl = document.getElementById('results');
+const seedInput = document.getElementById('seedInput');
+const startBtn = document.getElementById('startBtn');
+const resetBtn = document.getElementById('resetBtn');
+const fillExample = document.getElementById('fillExample');
+const spinCountInput = document.getElementById('spinCount');
+const spinsLabel = document.getElementById('spinsLabel');
+
+spinCountInput.addEventListener('input', ()=>spinsLabel.textContent = spinCountInput.value);
+
+function renderNames(){
+  namesListEl.innerHTML = '';
+  activeNames.forEach((nm, idx)=>{
+    const div = document.createElement('div');
+    div.className='nameItem';
+    const chk = document.createElement('input');
+    chk.type='checkbox';
+    chk.dataset.idx = idx;
+    chk.disabled = (document.querySelector('input[name=mode]:checked').value === 'seed');
+    const span = document.createElement('div');
+    span.textContent = nm;
+    div.appendChild(chk);
+    div.appendChild(span);
+    namesListEl.appendChild(div);
+  });
+}
+
+function updateCheckboxMode(){
+  const mode = document.querySelector('input[name=mode]:checked').value;
+  document.querySelectorAll('#namesList input[type=checkbox]').forEach(cb=>{
+    cb.disabled = (mode === 'seed');
+  });
+}
+document.querySelectorAll('input[name=mode]').forEach(r=>{
+  r.addEventListener('change', ()=> {
+    updateCheckboxMode();
+  });
+});
+
+function readManualSelection(){
+  const selected = [];
+  document.querySelectorAll('#namesList input[type=checkbox]').forEach((cb,i)=>{
+    if (cb.checked) selected.push(activeNames[i]);
+  });
+  return selected;
+}
+
+function updateResultsLog(text, isWinner=false){
+  const p = document.createElement('div');
+  if (isWinner) p.classList.add('winner');
+  p.textContent = text;
+  resultsEl.appendChild(p);
+  resultsEl.scrollTop = resultsEl.scrollHeight;
+}
+
+// Compute deterministic order: seededShuffle of activeNames using seed
+function deterministicOrder(names, seed){
+  return seededShuffle(names, seed);
+}
+
+// main process
+let spinning = false;
+async function pickFive(){
+  if (spinning) return;
+  if (activeNames.length < 5) {
+    alert("Need at least 5 names.");
+    return;
+  }
+  spinning = true;
+  resultsEl.innerHTML = '';
+  const mode = document.querySelector('input[name=mode]:checked').value;
+  const spinsPerPick = Math.max(1, parseInt(spinCountInput.value || 4, 10));
+  if (mode === 'manual'){
+    const forced = readManualSelection();
+    if (forced.length !== pickCount){
+      alert(`Manual mode: please select exactly ${pickCount} names in the list (currently ${forced.length}).`);
+      spinning = false;
+      return;
+    }
+    // spin each forced winner in sequence: we need to find their index in the current wheel at each step
+    for (let i=0;i<forced.length;i++){
+      drawWheel(activeNames);
+      const name = forced[i];
+      const idx = activeNames.indexOf(name);
+      if (idx === -1){
+        updateResultsLog(`${name} not found.`, false);
+        continue;
+      }
+      updateResultsLog(`Spinning for: ${name} ...`);
+      await spinToIndex(idx, activeNames.length, spinsPerPick);
+      updateResultsLog(`Winner ${i+1}: ${name}`, true);
+      // mark winner visually by temporarily drawing center circle text
+      highlightWinnerOnCanvas(name);
+      // remove winner from activeNames
+      activeNames.splice(idx, 1);
+      renderNames();
+      await sleep(400);
+    }
+    updateResultsLog("Manual picks complete.");
+  } else {
+    // deterministic mode
+    const seed = seedInput.value || 'seed';
+    // seeded order of names — the first pickCount items are winners in order
+    const order = deterministicOrder(activeNames, seed);
+    const winners = order.slice(0, pickCount);
+    // we'll spin to the index of each winner based on current wheel arrangement (activeNames), removing each as we go
+    for (let i=0;i<winners.length;i++){
+      drawWheel(activeNames);
+      const name = winners[i];
+      const idx = activeNames.indexOf(name);
+      updateResultsLog(`Spinning for pick ${i+1}...`);
+      await spinToIndex(idx, activeNames.length, spinsPerPick);
+      updateResultsLog(`Winner ${i+1}: ${name}`, true);
+      highlightWinnerOnCanvas(name);
+      activeNames.splice(idx,1);
+      renderNames();
+      await sleep(450);
+    }
+    updateResultsLog(`Deterministic picks complete (seed="${seed}").`);
+  }
+  drawWheel(activeNames);
+  spinning = false;
+}
+
+// draw name in center for brief highlight
+function highlightWinnerOnCanvas(name){
+  // overlay winner text in the center for a moment
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.font = 'bold 34px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(-radius*0.6, -40, radius*1.2, 80);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(name, 0, 10);
+  ctx.restore();
+}
+
+// small helper
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// reset
+function resetAll(){
+  activeNames = [...baseNames];
+  resultsEl.innerHTML = '';
+  applyRotation(0);
+  drawWheel(activeNames);
+  renderNames();
+}
+
+// fill example names
+function fillExampleNames(){
+  baseNames = [
+    "Zetsi","Oyuntulga","Unumunkh","Nyamkhuu","Temuujin","erkhet",
+    "Buynbadrakh","Erkhem-bayar","irmuun","tuguldur","Anand"
+  ];
+  activeNames = [...baseNames];
+  drawWheel(activeNames);
+  renderNames();
+}
+
+startBtn.addEventListener('click', async ()=>{
+  await pickFive();
+});
+
+resetBtn.addEventListener('click', ()=>{
+  resetAll();
+});
+
+fillExample.addEventListener('click', ()=>{
+  fillExampleNames();
+});
+
+// init: render default 11 blankish names for user to edit
+function createEditableNameInputs(){
+  namesListEl.innerHTML = '';
+  for (let i=0;i<11;i++){
+    const div = document.createElement('div');
+    div.className = 'nameItem';
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.disabled = true;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = baseNames[i];
+    input.style.flex = '1';
+    input.style.background = 'transparent';
+    input.style.border = 'none';
+    input.style.outline = 'none';
+    input.style.color = 'inherit';
+    input.dataset.index = i;
+    input.addEventListener('input', (e)=>{
+      const idx = parseInt(e.target.dataset.index,10);
+      baseNames[idx] = e.target.value || `Child ${idx+1}`;
+      activeNames[idx] = baseNames[idx];
+      drawWheel(activeNames);
+    });
+    div.appendChild(chk);
+    div.appendChild(input);
+    namesListEl.appendChild(div);
+  }
+}
+function convertEditableToStatic(){
+  // replace inputs with static display and enable checkboxes if manual
+  const inputs = namesListEl.querySelectorAll('input[type=text]');
+  const staticHtml = [];
+  baseNames = [];
+  inputs.forEach((inp, idx)=>{
+    baseNames.push(inp.value.trim() || `Child ${idx+1}`);
+  });
+  activeNames = [...baseNames];
+  // rebuild names list as static with checkboxes
+  renderNames();
+  updateCheckboxMode();
+  drawWheel(activeNames);
+}
+
+document.addEventListener('click', (e)=>{
+  if (e.target.matches('#namesList input[type=text]')) return;
+  // if inputs present, convert when clicking elsewhere (so user can edit inline then click Start)
+  if (namesListEl.querySelector('input[type=text]')){
+    if (!e.target.closest('#namesList')) {
+      convertEditableToStatic();
+    }
+  }
+});
+
+// first-time setup: create editable inputs so user can type names
+createEditableNameInputs();
+drawWheel(activeNames);
+
+// also support pressing Enter on seed to auto-convert names
+seedInput.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { if (namesListEl.querySelector('input[type=text]')) convertEditableToStatic(); } });
+
+// ensure checkboxes enable/disable when mode changes
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change', updateCheckboxMode));
+
+</script>
 </body>
 </html>
