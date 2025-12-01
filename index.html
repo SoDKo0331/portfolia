@@ -1,507 +1,540 @@
-<!DOCTYPE html>
-<html lang="mn">
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { Users, GraduationCap, DollarSign, Vote, Heart, AlertCircle } from 'lucide-react';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Дэлхийн 1-р Дайн - Digital Үзэсгэлэн</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+const FranceColonialPresentation = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [revealAnswer, setRevealAnswer] = useState(false);
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
-            overflow-x: hidden;
-        }
+  const slides = [
+    {
+      title: "Францын Колонийн Эзэмшил 1919-1939",
+      type: "intro",
+      icon: Users
+    },
+    {
+      title: "Тооны Сонголт - Таамаглаарай!",
+      type: "mystery",
+      numbers: ["95%", "4.5%", "0.8%"],
+      question: "Эдгээр тоонууд юуг илэрхийлж байна вэ?",
+      answer: "Сургуульд хамрагдалтын хувь: Франц хүүхдүүд (95%), Алжирын хүүхдүүд (4.5%), Дунд сургууль (0.8%)"
+    },
+    {
+      title: "Колонийн Хүрээ",
+      type: "stats",
+      data: [
+        { label: "Газар нутаг", value: "12.3 сая км²", detail: "Дэлхийн 8.6%" },
+        { label: "Хүн ам", value: "69 сая", detail: "Францаас 1.7 дахин их" },
+        { label: "Алжир", value: "6 сая", detail: "" },
+        { label: "Марокко", value: "7 сая", detail: "" },
+        { label: "Индокитай", value: "21.5 сая", detail: "Хамгийн том" }
+      ]
+    },
+    {
+      title: "Боловсролын Ялгаварлалт",
+      type: "education",
+      icon: GraduationCap
+    },
+    {
+      title: "Татварын Харьцуулалт",
+      type: "tax",
+      icon: DollarSign
+    },
+    {
+      title: "Газар Эзэмшил - Алжир 1930",
+      type: "land",
+      data: [
+        { group: "Францчууд", hectares: 2700000, percent: 40, population: 15 },
+        { group: "Алжирчууд", hectares: 7300000, percent: 60, population: 85 }
+      ]
+    },
+    {
+      title: "Саналын Эрх",
+      type: "voting",
+      icon: Vote
+    },
+    {
+      title: "Цалингийн Зөрүү 1935",
+      type: "wage"
+    },
+    {
+      title: "Эрүүл Мэндийн Тэгш Бус Байдал",
+      type: "health",
+      icon: Heart
+    },
+    {
+      title: "Code de l'Indigénat - Дарлалын Систем",
+      type: "code",
+      icon: AlertCircle
+    },
+    {
+      title: "Эсэргүүцэл ба Хохирол",
+      type: "resistance"
+    },
+    {
+      title: "Дүгнэлт: Тоонууд Ярьж Байна",
+      type: "conclusion"
+    }
+  ];
 
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23121212" width="1200" height="600"/></svg>');
-            background-size: cover;
-            position: relative;
-            overflow: hidden;
-        }
+  const educationData = [
+    { category: 'Франц хүүхдүүд', percent: 98, color: '#3B82F6' },
+    { category: 'Алжирын хүүхдүүд', percent: 4.5, color: '#EF4444' },
+    { category: 'Дунд сургууль', percent: 0.8, color: '#DC2626' }
+  ];
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(139, 69, 19, 0.2) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
+  const taxData = [
+    { name: 'Пьер (Франц)', income: 100, tax: 3, net: 97 },
+    { name: 'Нгуен (Вьетнам)', income: 100, tax: 25, net: 75 }
+  ];
 
-        @keyframes pulse {
+  const healthData = [
+    { indicator: 'Дундаж наслалт', france: 60, colony: 35 },
+    { indicator: 'Эмч/1000 хүн', france: 1.25, colony: 0.04 }
+  ];
 
-            0%,
-            100% {
-                opacity: 0.5;
-            }
+  const wageData = [
+    { type: 'Францын ажилтан', wage: 100 },
+    { type: 'Колонийн ажилтан', wage: 20 }
+  ];
 
-            50% {
-                opacity: 1;
-            }
-        }
+  const votingPieData = [
+    { name: 'Францчууд (саналын эрхтэй)', value: 100, color: '#3B82F6' },
+    { name: 'Алжирчууд (саналын эрхтэй)', value: 0.4, color: '#EF4444' }
+  ];
 
-        h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
-            animation: fadeInDown 1s ease;
-            z-index: 1;
-        }
+  const timelineData = [
+    { year: 1920, colonies: 69, frances: 40 },
+    { year: 1925, colonies: 72, frances: 41 },
+    { year: 1930, colonies: 75, frances: 41.5 },
+    { year: 1935, colonies: 78, frances: 42 },
+    { year: 1939, colonies: 80, frances: 42 }
+  ];
 
-        .subtitle {
-            font-size: 1.5rem;
-            color: #d4af37;
-            margin-bottom: 3rem;
-            animation: fadeInUp 1s ease 0.3s backwards;
-            z-index: 1;
-        }
+  const nextSlide = () => {
+    setRevealAnswer(false);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
 
-        .scroll-indicator {
-            animation: bounce 2s infinite;
-            font-size: 2rem;
-            z-index: 1;
-        }
+  const prevSlide = () => {
+    setRevealAnswer(false);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
+  const slide = slides[currentSlide];
+  const Icon = slide.icon;
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">Францын Колони Ард Түмнүүдийн Эрх</h1>
+          <p className="text-xl text-blue-200">1919-1939 | Зөвхөн Тоон Баримт</p>
+          <div className="mt-4 text-sm text-blue-300">
+            Слайд {currentSlide + 1} / {slides.length}
+          </div>
+        </div>
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-20px);
-            }
-
-            60% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .timeline {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 2rem;
-        }
-
-        .timeline-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-bottom: 6rem;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 0.8s ease;
-        }
-
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .timeline-item:nth-child(even) {
-            direction: rtl;
-        }
-
-        .timeline-item:nth-child(even)>* {
-            direction: ltr;
-        }
-
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            transition: transform 0.5s ease;
-        }
-
-        .image-container:hover {
-            transform: scale(1.05) rotate(1deg);
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            display: block;
-            filter: sepia(0.3) contrast(1.1);
-            transition: filter 0.3s ease;
-        }
-
-        .image-container:hover img {
-            filter: sepia(0) contrast(1.2);
-        }
-
-        .image-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
-            padding: 2rem;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .image-container:hover .image-overlay {
-            transform: translateY(0);
-        }
-
-        .year-badge {
-            background: #d4af37;
-            color: #000;
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 0.5rem;
-        }
-
-        .content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #d4af37;
-        }
-
-        .content p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #ddd;
-            text-align: justify;
-        }
-
-        .stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #d4af37;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #aaa;
-        }
-
-        footer {
-            text-align: center;
-            padding: 3rem;
-            background: rgba(0, 0, 0, 0.5);
-            margin-top: 4rem;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .timeline-item {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .timeline-item:nth-child(even) {
-                direction: ltr;
-            }
-
-            .content h2 {
-                font-size: 1.8rem;
-            }
-
-            .stats {
-                gap: 1rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="hero">
-        <h1>ДЭЛХИЙН 1-Р ДАЙН</h1>
-        <p class="subtitle">Соммын Дуугүй
-            Хашхиан</p>
-        <div class="scroll-indicator">↓</div>
-    </div>
-
-    <div class="timeline">
-        <!-- Event 1 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./1.jpg" alt="Сараево">
-                <div class="image-overlay">
-                    <div class="year-badge">1914.06.28</div>
+        {/* Main Content */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 min-h-[500px] shadow-2xl">
+          {/* Intro Slide */}
+          {slide.type === 'intro' && (
+            <div className="text-center space-y-8">
+              <Users className="w-32 h-32 mx-auto text-blue-300" />
+              <h2 className="text-4xl font-bold">{slide.title}</h2>
+              <div className="grid grid-cols-3 gap-6 mt-12">
+                <div className="bg-blue-600/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold">69M</div>
+                  <div className="text-lg mt-2">Колонийн хүн ам</div>
                 </div>
+                <div className="bg-blue-600/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold">12.3M</div>
+                  <div className="text-lg mt-2">км² газар нутаг</div>
+                </div>
+                <div className="bg-blue-600/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold">20</div>
+                  <div className="text-lg mt-2">Жил (1919-1939)</div>
+                </div>
+              </div>
             </div>
-            <div class="content">
-                <h2>Танилцуулга</h2>
-                <p>Somme region (Сомын бүс нутаг) нь Францын хойд хэсэгт, Hauts-de-France мужид байрладаг газар юм.
+          )}
 
-                    🌍 Somme region гэж юу вэ?
+          {/* Mystery Numbers */}
+          {slide.type === 'mystery' && (
+            <div className="text-center space-y-8">
+              <h2 className="text-3xl font-bold">{slide.title}</h2>
+              <div className="flex justify-center gap-8 my-12">
+                {slide.numbers.map((num, idx) => (
+                  <div key={idx} className="bg-yellow-500/20 border-4 border-yellow-400 p-8 rounded-2xl">
+                    <div className="text-6xl font-bold text-yellow-300">{num}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-2xl text-blue-200">{slide.question}</p>
+              {!revealAnswer && (
+                <button 
+                  onClick={() => setRevealAnswer(true)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-4 rounded-lg text-xl font-bold"
+                >
+                  Хариулт харах
+                </button>
+              )}
+              {revealAnswer && (
+                <div className="bg-green-600/30 p-6 rounded-xl text-xl">
+                  {slide.answer}
+                </div>
+              )}
+            </div>
+          )}
 
-                    Францын Somme (Сом) хэмээх аймагтай (département) газар
+          {/* Stats Slide */}
+          {slide.type === 'stats' && (
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-center mb-8">{slide.title}</h2>
+              {slide.data.map((item, idx) => (
+                <div key={idx} className="bg-blue-600/20 p-6 rounded-xl flex justify-between items-center">
+                  <div className="text-xl font-semibold">{item.label}</div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-blue-300">{item.value}</div>
+                    {item.detail && <div className="text-sm text-blue-200">{item.detail}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-                    Нэр нь Somme гол–оос гаралтай
+          {/* Education Chart */}
+          {slide.type === 'education' && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <GraduationCap className="w-16 h-16 mx-auto mb-4 text-blue-300" />
+                <h2 className="text-3xl font-bold">{slide.title}</h2>
+                <p className="text-xl text-blue-200 mt-2">Сургуульд хамрагдалт 1930</p>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={educationData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff30" />
+                  <XAxis dataKey="category" stroke="#fff" />
+                  <YAxis stroke="#fff" />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e3a8a', border: 'none' }} />
+                  <Bar dataKey="percent" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-red-600/30 p-4 rounded-lg text-center">
+                  <div className="text-4xl font-bold">15%</div>
+                  <div>Вьетнам бичиг үсэг тайлах</div>
+                </div>
+                <div className="bg-red-600/30 p-4 rounded-lg text-center">
+                  <div className="text-4xl font-bold">600</div>
+                  <div>Их сургууль төгсөгчид (Индокитай)</div>
+                </div>
+              </div>
+            </div>
+          )}
 
-                    Түүхийн хувьд хамгийн ихээр Дэлхийн I дайн, ялангуяа Somme-ийн тулалдаанаар алдартай
+          {/* Tax Comparison */}
+          {slide.type === 'tax' && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <DollarSign className="w-16 h-16 mx-auto mb-4 text-green-300" />
+                <h2 className="text-3xl font-bold">{slide.title}</h2>
+                <p className="text-xl text-blue-200 mt-2">Вьетнам 1930-ад он</p>
+              </div>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={taxData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff30" />
+                  <XAxis dataKey="name" stroke="#fff" />
+                  <YAxis stroke="#fff" />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e3a8a', border: 'none' }} />
+                  <Legend />
+                  <Bar dataKey="tax" name="Татвар" fill="#EF4444" />
+                  <Bar dataKey="net" name="Үлдсэн" fill="#10B981" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="bg-yellow-600/30 p-6 rounded-xl text-center">
+                <div className="text-5xl font-bold text-yellow-300">+300%</div>
+                <div className="text-xl mt-2">Давсны үнийн өсөлт (монополь)</div>
+              </div>
+            </div>
+          )}
 
-                    Төв хот нь Amiens (Амиен)
+          {/* Land Distribution */}
+          {slide.type === 'land' && (
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-center mb-8">{slide.title}</h2>
+              <div className="grid grid-cols-2 gap-8">
+                {slide.data.map((item, idx) => (
+                  <div key={idx} className={`${idx === 0 ? 'bg-blue-600/30' : 'bg-red-600/30'} p-6 rounded-xl`}>
+                    <h3 className="text-2xl font-bold mb-4">{item.group}</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="text-sm text-blue-200">Газар эзэмшил</div>
+                        <div className="text-3xl font-bold">{(item.hectares / 1000000).toFixed(1)}M га</div>
+                        <div className="text-lg text-blue-300">{item.percent}%</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-blue-200">Хүн ам</div>
+                        <div className="text-3xl font-bold">{item.population}%</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-yellow-600/30 p-4 rounded-lg text-center text-lg">
+                Францчууд 15% хүн ам байхад 40% газар эзэмшсэн
+              </div>
+            </div>
+          )}
 
+          {/* Voting Rights */}
+          {slide.type === 'voting' && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <Vote className="w-16 h-16 mx-auto mb-4 text-purple-300" />
+                <h2 className="text-3xl font-bold">{slide.title}</h2>
+                <p className="text-xl text-blue-200 mt-2">Алжир 1936</p>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={votingPieData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={(entry) => `${entry.name}: ${entry.value}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {votingPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-600/30 p-4 rounded-lg text-center">
+                  <div className="text-4xl font-bold">100%</div>
+                  <div>Францчууд саналын эрхтэй</div>
+                </div>
+                <div className="bg-red-600/30 p-4 rounded-lg text-center">
+                  <div className="text-4xl font-bold">0.3%</div>
+                  <div>Алжирчууд саналын эрхтэй</div>
+                  <div className="text-sm mt-2">24,000 / 6,000,000</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Wage Gap */}
+          {slide.type === 'wage' && (
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-center mb-8">{slide.title}</h2>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={wageData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff30" />
+                  <XAxis dataKey="type" stroke="#fff" />
+                  <YAxis stroke="#fff" />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e3a8a', border: 'none' }} />
+                  <Bar dataKey="wage" fill="#8B5CF6" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="bg-purple-600/30 p-6 rounded-xl">
+                <h3 className="text-2xl font-bold mb-4">Ажлын нөхцөл - Индокитай</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-sm text-blue-200">Францын стандарт</div>
+                    <div className="text-3xl font-bold">8 цаг/өдөр</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-blue-200">Каучукийн плантаци</div>
+                    <div className="text-3xl font-bold text-red-300">12-16 цаг</div>
+                  </div>
+                </div>
+                <div className="mt-4 bg-red-600/40 p-3 rounded-lg text-center">
+                  <span className="text-2xl font-bold">25%</span> ажилчдын эх үхэл
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Health Inequality */}
+          {slide.type === 'health' && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <Heart className="w-16 h-16 mx-auto mb-4 text-red-300" />
+                <h2 className="text-3xl font-bold">{slide.title}</h2>
+                <p className="text-xl text-blue-200 mt-2">1935 он</p>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-blue-600/30 p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Францад</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-sm text-blue-200">Дундаж наслалт</div>
+                      <div className="text-4xl font-bold">60 нас</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-blue-200">Эмч</div>
+                      <div className="text-3xl font-bold">1/800</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-red-600/30 p-6 rounded-xl">
+                  <h3 className="text-xl font-bold mb-4">Алжир (уугуул)</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-sm text-blue-200">Дундаж наслалт</div>
+                      <div className="text-4xl font-bold">35 нас</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-blue-200">Эмч</div>
+                      <div className="text-3xl font-bold">1/25,000</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-yellow-600/30 p-4 rounded-lg text-center text-xl">
+                Францын иргэд 31 дахин их эмч авах боломжтой
+              </div>
+            </div>
+          )}
+
+          {/* Code de l'Indigénat */}
+          {slide.type === 'code' && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-300" />
+                <h2 className="text-3xl font-bold">{slide.title}</h2>
+                <p className="text-xl text-blue-200 mt-2">1887-1946 (59 жил)</p>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-red-600/30 p-6 rounded-xl text-center">
+                  <div className="text-5xl font-bold">27</div>
+                  <div className="text-lg mt-2">Гэмт хэргийн төрөл</div>
+                  <div className="text-sm text-blue-200">(францчуудад хамаарахгүй)</div>
+                </div>
+                <div className="bg-red-600/30 p-6 rounded-xl text-center">
+                  <div className="text-5xl font-bold">200K+</div>
+                  <div className="text-lg mt-2">Жилд шийтгүүлсэн</div>
+                  <div className="text-sm text-blue-200">(1920-ад он)</div>
+                </div>
+                <div className="bg-red-600/30 p-6 rounded-xl text-center">
+                  <div className="text-5xl font-bold">0</div>
+                  <div className="text-lg mt-2">Шүүхийн шийдвэр</div>
+                  <div className="text-sm text-blue-200">(шууд шийтгэл)</div>
+                </div>
+              </div>
+              <div className="bg-orange-600/30 p-4 rounded-lg">
+                <p className="text-lg text-center">
+                  Францын захиргаа шүүхгүйгээр ямар ч шийтгэл оногдуулах эрхтэй
                 </p>
-
+              </div>
             </div>
-        </div>
+          )}
 
-        <!-- Event 2 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./2.jpg" alt="Суваг дайн">
-                <div class="image-overlay">
-                    <div class="year-badge">1916</div>
-                    <p>Battle of Albert</p>
+          {/* Resistance */}
+          {slide.type === 'resistance' && (
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-center mb-8">{slide.title}</h2>
+              <div className="space-y-4">
+                <div className="bg-red-700/40 p-6 rounded-xl">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-2xl font-bold">Yên Bái бослого (Вьетнам, 1930)</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <div className="text-sm text-blue-200">Цаазалсан</div>
+                      <div className="text-3xl font-bold">13 удирдагч</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-blue-200">Баривчлагдсан</div>
+                      <div className="text-3xl font-bold">5,000+</div>
+                    </div>
+                  </div>
                 </div>
+                <div className="bg-red-700/40 p-6 rounded-xl">
+                  <h3 className="text-2xl font-bold mb-4">Марокко эсэргүүцэл (1930-1934)</h3>
+                  <div>
+                    <div className="text-sm text-blue-200">Жагсаалд оролцогчид</div>
+                    <div className="text-4xl font-bold">100,000+ хүн</div>
+                  </div>
+                </div>
+                <div className="bg-red-800/40 p-6 rounded-xl">
+                  <h3 className="text-2xl font-bold mb-4">Setif үйл явдал (Алжир, 1945)*</h3>
+                  <div>
+                    <div className="text-sm text-blue-200">Амь үрэгдсэн</div>
+                    <div className="text-4xl font-bold">~45,000 хүн</div>
+                    <div className="text-sm text-blue-200 mt-2">*1930-аас эхэлсэн хөдөлгөөн</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="content">
-                <h2>The Battle Of The Somme </h2>
-                <h3>Дэлхийг доргиосон 141 өдөр</h3>
-                <p>1916 оны 7-р сарын 1–ээс 11-р сарын 18 хүртэл үргэлжилсэн Соммын тулалдаан нь дайны түүхэн дэх
-                    хамгийн цус урсгасан тулаануудын нэг байв. Эхний өдөр л гэхэд Британийн 57,000 гаруй цэрэг шархадсан
-                    эсвэл амиа алдсан нь улс орных нь цэргийн түүхэн дэх хамгийн хар өдрүүдийн нэг болсон. Тулаан нь
-                    холын тусгалт буу, их бууны гал, газарт хийгдсэн бэхлэлт, шинэ төрлийн тактикуудыг ашигласнаараа
-                    Дэлхийн I дайны технологийн хэрхэн сүйрэл авчирсныг харуулдаг.
+          )}
 
+          {/* Conclusion */}
+          {slide.type === 'conclusion' && (
+            <div className="text-center space-y-8">
+              <h2 className="text-4xl font-bold mb-8">{slide.title}</h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-blue-600/30 to-blue-700/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold text-blue-300">4.5%</div>
+                  <div className="text-lg mt-2">vs 98% сургуульд</div>
+                </div>
+                <div className="bg-gradient-to-br from-red-600/30 to-red-700/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold text-red-300">0.3%</div>
+                  <div className="text-lg mt-2">саналын эрхтэй</div>
+                </div>
+                <div className="bg-gradient-to-br from-purple-600/30 to-purple-700/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold text-purple-300">5x</div>
+                  <div className="text-lg mt-2">илүү их татвар</div>
+                </div>
+                <div className="bg-gradient-to-br from-orange-600/30 to-orange-700/30 p-6 rounded-xl">
+                  <div className="text-5xl font-bold text-orange-300">25 нас</div>
+                  <div className="text-lg mt-2">богино наслалт</div>
+                </div>
+              </div>
+              <div className="bg-yellow-600/30 p-8 rounded-xl mt-8">
+                <p className="text-3xl font-bold">Тэгш эрх гэж юу вэ?</p>
+                <p className="text-xl mt-4 text-blue-200">
+                  69 сая хүн колонид амьдарч байсан ч тэдний эрх Францчуудтай харьцуулахгүй байлаа
                 </p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">57,000</div>
-                        <div class="stat-label">Цэрэг шархадсан эсвэл амиа алдсан</div>
-                    </div>
-                </div>
+              </div>
             </div>
+          )}
         </div>
 
-        <!-- Event 3 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./3.png" alt="Хийн халдлага">
-                <div class="image-overlay">
-                    <div class="year-badge">1916</div>
-                    <p>Battle Of The Somme</p>
-                </div>
-            </div>
-            <div class="content">
-                <h2>Түүхэн баримт</h2>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">1.2 сая</div>
-                        <div class="stat-label">Хохирогч</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">Анх удаа танк дайнд
-                            ашиглагдсан</div>
-
-                    </div>
-                </div>
-                <p>Гол сургамж:
-                    Технологи хөгжих тусам
-                    хүний амь илүү үнэтэй
-                    болдог.</p>
-            </div>
+        {/* Navigation */}
+        <div className="flex justify-between mt-8">
+          <button 
+            onClick={prevSlide}
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-lg font-semibold disabled:opacity-50"
+            disabled={currentSlide === 0}
+          >
+            ← Өмнөх
+          </button>
+          <div className="text-lg">
+            {currentSlide + 1} / {slides.length}
+          </div>
+          <button 
+            onClick={nextSlide}
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-lg font-semibold disabled:opacity-50"
+            disabled={currentSlide === slides.length - 1}
+          >
+            Дараах →
+          </button>
         </div>
 
-        <!-- Event 4 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./4.jpg" alt="Анхны танк">
-                <div class="image-overlay">
-                    <div class="year-badge">1916.09.15</div>
-                    <p>he Village Of Mametz (1916)
-
-                        After Bombardment </p>
-                </div>
-            </div>
-            <div class="content">
-                <h2>Иргэдийн Амссан Зовлон</h2>
-                <h3>Дайны хор нь хэн бүхнийг хөнддөг</h3>
-                <p>Somme бүсийн тосгон, ферм, хотууд фронтын хоорондох талбай болгон ашиглагдсан тул энгийн иргэдийн
-                    амьдрал бүхэлдээ нурахад хүрсэн.
-                    Хүмүүс гэр орноосоо дүрвэж, олон мянган иргэн барилга, тариалангийн газар, жижиг аж ахуйгаа алджээ.
-                    Дайны дараа Somme аймаг бараг бүхэлдээ сүйдсэн байсан бөгөөд аймаг дахин сэргэхэд олон жил шаардсан.
-                    Энэхүү панель нь иргэдийн алдагдал, амьдралын түүх, гэрэл зургаар дамжуулан дайн энгийн хүмүүст
-                    хэрхэн нөлөөлдгийг өгүүлнэ.</p>
-                <div class="stats">
-
-                </div>
-            </div>
+        {/* Timer (Optional) */}
+        <div className="text-center mt-4 text-sm text-blue-300">
+          Илтгэлийн хугацаа: 10 минут
         </div>
-
-        <!-- Event 6 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./5.jpg" alt="Зүүн фронт">
-                <div class="image-overlay">
-                    <div class="year-badge">1916</div>
-                    <p>Battle Of Mametz Wood </p>
-                </div>
-            </div>
-            <div class="content">
-                <h2>Түүхэн баримт:</h2>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">– 1916 онд зөвхөн Сомм
-                            аймагт 80% барилга
-                            сүйдсэн</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">– 500,000 гаруй иргэн
-                            дүрвэсэн</div>
-                    </div>
-                </div>
-                <h3>Гол сургамж:</h3>
-                <p>Дайн зөвхөн цэргүүдийн бус, бүх
-                    нийгмийн эмгэнэл.</p>
-            </div>
-        </div>
-        <!-- Event 5 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./7.jpg"
-                    alt="Лузитания">
-                <div class="image-overlay">
-                    <div class="year-badge"></div>
-                    <p>The Thiepval Memorial To The Missing
-                        Of The Somme </p>
-                </div>
-            </div>
-            <div class="content">
-                <h2>Дурсгалууд Ба Музей</h2>
-                <h3>Санахын тулд хадгална</h3>
-                <p>Өнөөдөр Somme орчимд олон тооны дурсгалын газар, музей, бунхан, цэргийн оршуулгын талбай хадгалагдан
-                    үлдсэн. Альберт хот дахь Somme 1916 музей, Thiepval Thiepval Memorial зэрэг газрууд нь олон улсын
-                    зочдод дайны аймшгийг сануулах зорилготой. Эдгээр музей нь дайны бодит түүх, цэргийн хэрэглэж байсан
-                    эд зүйл, гэрэл зураг, газрын зураг, амьд үлдэгсдийн түүхийг харуулдаг.</p>
-
-            </div>
-        </div>
-        <!-- Event 7 -->
-        <div class="timeline-item">
-            <div class="image-container">
-                <img src="./8.png"
-                    alt="Зэвсэг буулгах">
-                <div class="image-overlay">
-                    <div class="year-badge">1916</div>
-                    <p>Memorial And Cemeteries Around the
-Area Of The River Somme </p>
-                </div>
-            </div>
-            <div class="content">
-                <h2>Түүхэн баримт</h2>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">72,337</div>
-                        <div class="stat-label">Thiepval-д сураггүй алга болсон цэргийн нэр
-бий</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">400+</div>
-                        <div class="stat-label">Дурсгалын газарууд байдаг</div>
-                    </div>
-                </div>
-                  <h3>Гол сургамж:</h3>
-                <p>Өнгөрснийг мартвал ирээдүйд дахин давтагдана.</p>
-            </div>
-          
-        </div>
+      </div>
     </div>
-    <footer>
-        <h3>Дэлхийн 1-р Дайн - Digital Үзэсгэлэн</h3>
-        <p style="margin-top: 1rem; color: #888;">1916-1918 | Дэлхийг өөрчилсөн дайны түүх</p>
-        <p style="margin-top: 2rem; color: #666;">Энэхүү үзэсгэлэн нь түүхэн сургамжийг хадгалах зорилготой</p>
-    </footer>
+  );
+};
 
-    <script>
-        // Scroll animation
-        const observerOptions = {
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.timeline-item').forEach(item => {
-            observer.observe(item);
-        });
-
-        // Smooth scroll for hero indicator
-        document.querySelector('.scroll-indicator').addEventListener('click', () => {
-            document.querySelector('.timeline').scrollIntoView({ behavior: 'smooth' });
-        });
-    </script>
-</body>
-
-</html>
+export default FranceColonialPresentation;
