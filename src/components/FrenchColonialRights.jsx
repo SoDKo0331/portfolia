@@ -1,373 +1,428 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { Globe, Users, Scale, TrendingUp, Flag, Award } from 'lucide-react';
 
-// Том тоог хялбарчлах функц (1,500,000 -> 1.5M)
-const formatBigNumber = (value) => {
-  if (value >= 1000000) {
-    return (value / 1000000).toFixed(1) + 'M';
-  }
-  if (value >= 1000) {
-    return (value / 1000).toFixed(0) + 'K';
-  }
-  return value.toLocaleString();
-};
+const ColonialRightsStory = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(true);
 
-// Tooltip-ийг илүү цэвэрхэн харагдуулах Custom Component
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-3 border border-gray-300 shadow-md rounded-lg">
-        <p className="font-bold text-gray-700 mb-1">{label}</p>
-        {payload.map((item, index) => (
-          <p key={index} style={{ color: item.color }}>
-            <span className="font-semibold">{item.name}:</span> {formatBigNumber(item.value)}
-          </p>
+  // Колонийн эзэмшлийн өгөгдөл
+  const colonialPowers = [
+    { name: 'Их Британи', area: 33.0, population: 458, flag: '🇬🇧' },
+    { name: 'Франц', area: 12.3, population: 65, flag: '🇫🇷' },
+    { name: 'Бельги', area: 2.4, population: 15, flag: '🇧🇪' },
+    { name: 'Португал', area: 2.1, population: 13, flag: '🇵🇹' },
+    { name: 'Нидерланд', area: 2.0, population: 66, flag: '🇳🇱' },
+    { name: 'Япон', area: 0.3, population: 32, flag: '🇯🇵' }
+  ];
+
+  // Эрхийн радар диаграм
+  const rightsRadar = [
+    { право: 'Засаглал', хязгаарлалт: 95, хэрэгтэй: 100 },
+    { право: 'Шүүх', хязгаарлалт: 85, хэрэгтэй: 100 },
+    { право: 'Хөдөлмөр', хязгаарлалт: 80, хэрэгтэй: 100 },
+    { право: 'Боловсрол', хязгаарлалт: 75, хэрэгтэй: 100 },
+    { право: 'Эдийн засаг', хязгаарлалт: 70, хэрэгтэй: 100 },
+    { право: 'Хувь хүн', хязгаарлалт: 65, хэрэгтэй: 100 }
+  ];
+
+  // Эсэргүүцлийн хөдөлгөөн
+  const resistanceData = [
+    { year: '1919', events: 12, цэг: '⚫' },
+    { year: '1922', events: 18, цэг: '🔵' },
+    { year: '1925', events: 24, цэг: '🟡' },
+    { year: '1928', events: 31, цэг: '🟠' },
+    { year: '1930', events: 45, цэг: '🔴' },
+    { year: '1933', events: 52, цэг: '🔴' },
+    { year: '1936', events: 68, цэг: '🔴' },
+    { year: '1939', events: 89, цэг: '🔴' }
+  ];
+
+  // Хүн амын ангилал
+  const populationStatus = [
+    { name: 'Колончлогдсон', value: 750, percent: 32, emoji: '⛓️' },
+    { name: 'Хагас колони', value: 400, percent: 17, emoji: '🔗' },
+    { name: 'Мандат газар', value: 120, percent: 5, emoji: '📋' },
+    { name: 'Тусгаар тогтносон', value: 1080, percent: 46, emoji: '🗽' }
+  ];
+
+  const COLORS = ['#ef4444', '#f97316', '#facc15', '#22c55e'];
+  const GRADIENT_COLORS = [
+    'from-red-500 to-pink-500',
+    'from-orange-500 to-yellow-500',
+    'from-yellow-500 to-lime-500',
+    'from-green-500 to-emerald-500'
+  ];
+
+  const slides = [
+    // СЛАЙД 1: Эхлэл - Дэлхийн зураг
+    <div key="slide0" className="space-y-8 animate-fade-in">
+      <div className="text-center mb-12">
+        <div className="text-8xl mb-6 animate-bounce">🌍</div>
+        <h1 className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          1919-1939
+        </h1>
+        <h2 className="text-4xl font-bold text-gray-800 mb-3">
+          Колони ард түмнүүдийн эрх
+        </h2>
+        <p className="text-2xl text-gray-600">Дэлхийн түүхийн нэг хэсэг 📖</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all">
+          <div className="text-white text-center">
+            <Globe className="w-16 h-16 mx-auto mb-4" />
+            <div className="text-5xl font-bold mb-2">750 сая</div>
+            <div className="text-xl opacity-90">Хүн ам</div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all">
+          <div className="text-white text-center">
+            <Scale className="w-16 h-16 mx-auto mb-4" />
+            <div className="text-5xl font-bold mb-2">6</div>
+            <div className="text-xl opacity-90">Их гүрэн</div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-pink-500 to-pink-600 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all">
+          <div className="text-white text-center">
+            <Flag className="w-16 h-16 mx-auto mb-4" />
+            <div className="text-5xl font-bold mb-2">32%</div>
+            <div className="text-xl opacity-90">Дэлхий</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 p-8 rounded-2xl mt-8">
+        <p className="text-2xl text-center font-semibold text-gray-700">
+          Дэлхийн гуравны нэг хэсэг <span className="text-4xl">🌏🌍🌎</span> колони байсан!
+        </p>
+      </div>
+    </div>,
+
+    // СЛАЙД 2: Колонийн их гүрнүүд
+    <div key="slide1" className="space-y-6 animate-fade-in">
+      <div className="text-center mb-8">
+        <h2 className="text-5xl font-bold text-gray-800 mb-2">🏴 Колонийн их гүрнүүд</h2>
+        <p className="text-2xl text-gray-600">Хэн дэлхийг эзэмшиж байсан бэ?</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {colonialPowers.map((power, idx) => (
+          <div key={idx} className={`bg-gradient-to-br ${GRADIENT_COLORS[idx % 4]} p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all`}>
+            <div className="text-center text-white">
+              <div className="text-5xl mb-3">{power.flag}</div>
+              <div className="text-xl font-bold mb-2">{power.name}</div>
+              <div className="text-3xl font-black mb-1">{power.area} сая км²</div>
+              <div className="text-lg opacity-90">{power.population} сая хүн</div>
+            </div>
+          </div>
         ))}
       </div>
-    );
-  }
-  return null;
-};
 
-const FrenchColonialRights = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={colonialPowers}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" style={{ fontSize: '14px', fontWeight: 'bold' }} />
+          <YAxis />
+          <Tooltip contentStyle={{ fontSize: '16px', fontWeight: 'bold' }} />
+          <Bar dataKey="area" fill="#3b82f6" name="Талбай (сая км²)" radius={[10, 10, 0, 0]} />
+          <Bar dataKey="population" fill="#ef4444" name="Хүн ам (сая)" radius={[10, 10, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
 
-  // Өгөгдлийн объект - useMemo ашиглан меморизинг хийсэн
-  const chartData = useMemo(() => {
-    // Колони хүн амын өгөгдөл
-    const populationData = [
-      { year: 1919, total: 55000000, algeria: 5000000, westAfrica: 12000000, indochina: 18000000 },
-      { year: 1925, total: 60000000, algeria: 5500000, westAfrica: 13000000, indochina: 19000000 },
-      { year: 1930, total: 65000000, algeria: 6000000, westAfrica: 14000000, indochina: 20000000 },
-      { year: 1936, total: 69100000, algeria: 6500000, westAfrica: 15000000, indochina: 21000000 }
-    ];
+      <div className="bg-yellow-100 border-l-8 border-yellow-500 p-6 rounded-lg">
+        <p className="text-2xl font-bold text-yellow-800 text-center">
+          🔥 Их Британи хамгийн том - Дэлхийн 1/4 хэсгийг эзэмшиж байсан!
+        </p>
+      </div>
+    </div>,
 
-    // Иргэншил авсан тоо
-    const citizenshipData = [
-      { period: '1865-1919', algeria: 2500, westAfrica: 500, total: 3000 },
-      { period: '1919-1930', algeria: 1500, westAfrica: 800, total: 2300 },
-      { period: '1930-1939', algeria: 2000, westAfrica: 1200, total: 3200 }
-    ];
+    // СЛАЙД 3: Эрхийн хязгаарлалт - Радар
+    <div key="slide2" className="space-y-6 animate-fade-in">
+      <div className="text-center mb-8">
+        <h2 className="text-5xl font-bold text-gray-800 mb-2">⚖️ Эрхүүд хязгаарлагдсан</h2>
+        <p className="text-2xl text-gray-600">Колони хүмүүс юунд эрхгүй байсан бэ?</p>
+      </div>
 
-    // Боловсролын статистик
-    const educationData = [
-      { region: 'Алжир', enrolled: 5, illiterate: 95 },
-      { region: 'Баруун Африк', enrolled: 8, illiterate: 92 },
-      { region: 'Индокитай', enrolled: 15, illiterate: 85 },
-      { region: 'Франц', enrolled: 95, illiterate: 5 }
-    ];
-
-    // Албадан хөдөлмөр
-    const forcedLaborData = [
-      { year: 1920, workers: 850000, type: 'Зам барилга' },
-      { year: 1925, workers: 1200000, type: 'Зам барилга' },
-      { year: 1930, workers: 1500000, type: 'Зам барилга' },
-      { year: 1935, workers: 1300000, type: 'Зам барилга' }
-    ];
-
-    // Хуулийн эрх
-    const legalRightsData = [
-      { status: 'Франц Иргэн', rights: 100, population: 500000, color: '#3b82f6' },
-      { status: 'Нутгийн Суурьшсан', rights: 25, population: 2000000, color: '#f59e0b' },
-      { status: 'Нутгийн Захиргаа', rights: 10, population: 66600000, color: '#ef4444' }
-    ];
-    
-    // Татварын дарамт - Өгөгдлийг илүү график хэлбэрт оруулах
-    const taxData = [
-      { category: 'Толгойн Татвар', amount: 100, impact: 'Бүх эрэгтэй насанд хүрэгчид' },
-      { category: 'Хөдөлмөрийн Татвар', amount: 85, impact: '30-40 хоног албадан хөдөлмөр' },
-      { category: 'Бусад Татвар', amount: 65, impact: 'Газар тариалангийн үйлдвэрлэл' }
-    ];
-    
-    return { populationData, citizenshipData, educationData, forcedLaborData, legalRightsData, taxData };
-  }, []);
-
-  const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'];
-
-  const slides = useMemo(() => [
-    {
-      title: "ФРАНЦЫН КОЛОНИЙН ХҮНИЙ ЭРХ 1919-1939",
-      subtitle: "Тоо баримтаар илэрхийлсэн өнгөрсөн түүх",
-      content: (
-        <div className="text-center space-y-8 p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-red-100 p-6 rounded-lg shadow-md">
-              <div className="text-5xl font-bold text-red-600">69.1М</div>
-              <div className="text-lg mt-2">Нийт колони хүн ам (1936)</div>
-            </div>
-            <div className="bg-orange-100 p-6 rounded-lg shadow-md">
-              <div className="text-5xl font-bold text-orange-600">0.01%</div>
-              <div className="text-lg mt-2">Иргэншил авсан нутгийн иргэд</div>
-            </div>
-            <div className="bg-blue-100 p-6 rounded-lg shadow-md">
-              <div className="text-5xl font-bold text-blue-600">85%</div>
-              <div className="text-lg mt-2">Бичиг үсэггүй хүн ам</div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "ХҮН АМЫН ӨСӨЛТ 1919-1936",
-      subtitle: "Колони хүн амын бүтэц (Саяар)",
-      content: (
-        <ResponsiveContainer width="100%" height={400} className="p-4">
-          <LineChart data={chartData.populationData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" />
-            <YAxis tickFormatter={val => formatBigNumber(val)} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Line type="monotone" dataKey="total" stroke="#8b5cf6" strokeWidth={3} name="Нийт" />
-            <Line type="monotone" dataKey="algeria" stroke="#ef4444" strokeWidth={2} name="Алжир" />
-            <Line type="monotone" dataKey="westAfrica" stroke="#f59e0b" strokeWidth={2} name="Баруун Африк" />
-            <Line type="monotone" dataKey="indochina" stroke="#10b981" strokeWidth={2} name="Индокитай" />
-          </LineChart>
+      <div className="flex justify-center">
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart data={rightsRadar}>
+            <PolarGrid stroke="#cbd5e1" />
+            <PolarAngleAxis dataKey="право" style={{ fontSize: '16px', fontWeight: 'bold' }} />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} />
+            <Radar name="Хязгаарлалт" dataKey="хязгаарлалт" stroke="#dc2626" fill="#dc2626" fillOpacity={0.6} strokeWidth={3} />
+            <Radar name="Хэрэгтэй эрх" dataKey="хэрэгтэй" stroke="#22c55e" fill="#22c55e" fillOpacity={0.2} strokeWidth={2} />
+            <Legend wrapperStyle={{ fontSize: '18px', fontWeight: 'bold' }} />
+          </RadarChart>
         </ResponsiveContainer>
-      )
-    },
-    {
-      title: "ИРГЭНШЛИЙН ХАНДЛАГА",
-      subtitle: "1865-1939 оны хооронд франц иргэншил авсан тоо (Колони нутгаас)",
-      content: (
-        <div className="space-y-6 p-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData.citizenshipData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="algeria" fill="#ef4444" name="Алжир" />
-              <Bar dataKey="westAfrica" fill="#f59e0b" name="Баруун Африк" />
-              <Bar dataKey="total" fill="#3b82f6" name="Нийт" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-red-50 border-4 border-red-300 p-6 rounded-xl">
+          <div className="text-center">
+            <div className="text-6xl mb-3">🚫</div>
+            <div className="text-3xl font-bold text-red-600 mb-2">95%</div>
+            <div className="text-lg text-gray-700">Засаглалд оролцох эрхгүй</div>
+          </div>
+        </div>
+        <div className="bg-orange-50 border-4 border-orange-300 p-6 rounded-xl">
+          <div className="text-center">
+            <div className="text-6xl mb-3">⚖️</div>
+            <div className="text-3xl font-bold text-orange-600 mb-2">85%</div>
+            <div className="text-lg text-gray-700">Тэгш шүүхийн эрхгүй</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-red-500 to-orange-500 p-6 rounded-xl text-white text-center">
+        <p className="text-2xl font-bold">
+          💔 Өөрсдийн эх оронд өөрсдөө шийдвэр гаргах эрхгүй байсан!
+        </p>
+      </div>
+    </div>,
+
+    // СЛАЙД 4: Хүн амын хуваарилалт
+    <div key="slide3" className="space-y-6 animate-fade-in">
+      <div className="text-center mb-8">
+        <h2 className="text-5xl font-bold text-gray-800 mb-2">👥 Дэлхийн хүмүүс</h2>
+        <p className="text-2xl text-gray-600">Нийт 2.35 тэрбум хүн ам</p>
+      </div>
+
+      <div className="flex justify-center">
+        <ResponsiveContainer width="100%" height={400}>
+          <PieChart>
+            <Pie
+              data={populationStatus}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) => `${name} ${percent}%`}
+              outerRadius={150}
+              fill="#8884d8"
+              dataKey="value"
+              style={{ fontSize: '16px', fontWeight: 'bold' }}
+            >
+              {populationStatus.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip contentStyle={{ fontSize: '16px', fontWeight: 'bold' }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-4 gap-4">
+        {populationStatus.map((item, idx) => (
+          <div key={idx} className={`p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all border-4`} 
+               style={{backgroundColor: `${COLORS[idx]}20`, borderColor: COLORS[idx]}}>
             <div className="text-center">
-              <div className="text-4xl font-bold text-gray-700">8,500</div>
-              <div className="text-lg mt-2">1865-1939: Нийт иргэншил авсан</div>
-              <div className="text-sm text-gray-600 mt-2">69,100,000 хүн амаас зөвхөн 0.012%</div>
+              <div className="text-5xl mb-3">{item.emoji}</div>
+              <div className="text-3xl font-bold mb-1" style={{color: COLORS[idx]}}>{item.value}м</div>
+              <div className="text-sm font-semibold text-gray-700">{item.name}</div>
+              <div className="text-2xl font-bold mt-2" style={{color: COLORS[idx]}}>{item.percent}%</div>
             </div>
           </div>
-        </div>
-      )
-    },
-    {
-      title: "БОЛОВСРОЛЫН ЭРХ",
-      subtitle: "1930-ийн оны үеийн сургуульд хамрагдалт (%)",
-      content: (
-        <div className="space-y-6 p-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData.educationData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis type="category" dataKey="region" width={100} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="enrolled" fill="#10b981" name="Сургуульд хамрагдсан %" />
-              <Bar dataKey="illiterate" fill="#ef4444" name="Бичиг үсэггүй %" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-red-50 p-4 rounded shadow-sm">
-              <div className="text-3xl font-bold text-red-600">15%</div>
-              <div className="text-sm">Индокитайд сургууль явсан хүүхдүүд (1939)</div>
-            </div>
-            <div className="bg-orange-50 p-4 rounded shadow-sm">
-              <div className="text-3xl font-bold text-orange-600">80%</div>
-              <div className="text-sm">Нийт хүн амын бичиг үсэггүй байдал</div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "АЛБАДАН ХӨДӨЛМӨР",
-      subtitle: "1920-1935 оны хооронд татан авагдсан ажилчид",
-      content: (
-        <div className="space-y-6 p-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData.forcedLaborData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
-              <YAxis tickFormatter={val => formatBigNumber(val)} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Line type="monotone" dataKey="workers" stroke="#dc2626" strokeWidth={3} name="Албадан ажилчид" />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="bg-red-100 p-6 rounded-lg shadow-inner">
-            <div className="space-y-3 text-sm sm:text-base">
-              <div className="flex justify-between border-b pb-1">
-                <span className="font-semibold">Зам барилга (1920-иод)</span>
-                <span className="font-bold text-red-700">100,000+ тосогч зугтсан</span>
-              </div>
-              <div className="flex justify-between border-b pb-1">
-                <span className="font-semibold">ILO Конвенц (1930)</span>
-                <span className="font-bold text-blue-700">Франц 7 жилийн дараа баталсан</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold">Нийт албадан ажилчид</span>
-                <span className="font-bold text-gray-800">{formatBigNumber(1500000)}+ (1930)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "ХУУЛИЙН ЭРХИЙН ЯЛГАА",
-      subtitle: "Code de l'Indigénat - Нутгийн хууль (1881-1946)",
-      content: (
-        <div className="space-y-6 p-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData.legalRightsData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="status" />
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="rights" fill="#3b82f6" name="Эрхийн түвшин %" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-blue-50 p-4 rounded shadow-sm">
-              <div className="text-2xl font-bold text-blue-600">Франц Иргэн</div>
-              <div className="text-sm mt-2">• Бүрэн эрх • Шүүх эрх • Сонгох эрх</div>
-              <div className="text-xs text-gray-600 mt-2">~{formatBigNumber(500000)} хүн</div>
-            </div>
-            <div className="bg-red-50 p-4 rounded shadow-sm">
-              <div className="text-2xl font-bold text-red-600">Нутгийн Иргэд</div>
-              <div className="text-sm mt-2">• Албадан хөдөлмөр • Шүүх эрхгүй • Сонгох эрхгүй</div>
-              <div className="text-xs text-gray-600 mt-2">~{formatBigNumber(66600000)} хүн</div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "ТАТВАРЫН ДАРАМТ",
-      subtitle: "Нутгийн хүн амд ногдуулсан санхүүгийн дарамт",
-      content: (
-        <div className="space-y-6 p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {chartData.taxData.map((tax, idx) => (
-              <div key={idx} className="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-lg shadow-md">
-                <div className="text-3xl font-bold text-red-600">{tax.amount}%</div>
-                <div className="text-lg font-semibold mt-2">{tax.category}</div>
-                <div className="text-sm text-gray-600 mt-2">{tax.impact}</div>
-              </div>
-            ))}
-          </div>
-          <div className="bg-yellow-100 p-6 rounded-lg shadow-inner">
-            <div className="font-bold text-xl mb-3">Хөдөлмөрийн Татвар (Prestation):</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div>• **30-40** хоног албадан ажил</div>
-              <div>• Зам барилга, ногоон талбай</div>
-              <div>• Мөнгөөр төлж чөлөөлөгдөх **боломжгүй**</div>
-              <div>• 1930: ILO-гоос хориглосон ч үргэлжилсэн</div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: "ДҮГНЭЛТ: ТОО БАРИМТ ЯРИНА",
-      subtitle: "1919-1939 оны Францын колонийн бодит байдал",
-      content: (
-        <div className="space-y-6 p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-red-100 p-6 rounded-lg shadow-lg">
-              <div className="text-4xl font-bold text-red-600 mb-3">99.99%</div>
-              <div className="text-lg font-semibold">Нутгийн хүн ам</div>
-              <div className="text-sm mt-2">Бүрэн эрхгүй, албадан хөдөлмөр, боловсролгүй</div>
-            </div>
-            <div className="bg-blue-100 p-6 rounded-lg shadow-lg">
-              <div className="text-4xl font-bold text-blue-600 mb-3">0.01%</div>
-              <div className="text-lg font-semibold">Иргэн болсон</div>
-              <div className="text-sm mt-2">1865-1939: Зөвхөн {formatBigNumber(8500)} хүн</div>
-            </div>
-          </div>
-          <div className="bg-gray-100 p-6 rounded-lg shadow-inner">
-            <div className="text-lg font-bold mb-4">ГҮЙЦЭТГЭХ ЗӨВЛӨМЖ:</div>
-            <div className="space-y-2 text-sm">
-              <div>📊 **Өгөгдөл:** Түүхэн баримт дээр үндэслэсэн</div>
-              <div>📈 **График:** Тодорхой статистик дүрслэл</div>
-              <div>🎯 **Хэлбэр:** Интерактив, сонирхолтой</div>
-              <div>⏱️ **Хугацаа:** 7-10 минут үзүүлэх</div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-  ], [chartData]);
+        ))}
+      </div>
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, [slides.length]);
+      <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-6 rounded-xl border-4 border-blue-300">
+        <p className="text-2xl font-bold text-center text-gray-800">
+          🌟 Дэлхийн хүмүүсийн дөнгөж 46% л чөлөөтэй байсан!
+        </p>
+      </div>
+    </div>,
 
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  }, [slides.length]);
+    // СЛАЙД 5: Эсэргүүцэл өсөж байна!
+    <div key="slide4" className="space-y-6 animate-fade-in">
+      <div className="text-center mb-8">
+        <h2 className="text-5xl font-bold text-gray-800 mb-2">✊ Эсэргүүцэл өсөж байна!</h2>
+        <p className="text-2xl text-gray-600">Хүмүүс эрхийнхээ төлөө тэмцэж эхэллээ</p>
+      </div>
+
+      <ResponsiveContainer width="100%" height={350}>
+        <LineChart data={resistanceData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="year" style={{ fontSize: '16px', fontWeight: 'bold' }} />
+          <YAxis style={{ fontSize: '16px', fontWeight: 'bold' }} />
+          <Tooltip contentStyle={{ fontSize: '18px', fontWeight: 'bold' }} />
+          <Line type="monotone" dataKey="events" stroke="#dc2626" strokeWidth={5} 
+                dot={{ fill: '#dc2626', r: 8 }} name="Эсэргүүцлийн үйл явдал" />
+        </LineChart>
+      </ResponsiveContainer>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-gradient-to-br from-red-500 to-pink-500 p-6 rounded-xl shadow-xl text-white text-center transform hover:scale-105 transition-all">
+          <TrendingUp className="w-12 h-12 mx-auto mb-3" />
+          <div className="text-5xl font-black mb-2">640%</div>
+          <div className="text-lg font-semibold">Өсөлт 20 жилд!</div>
+        </div>
+        <div className="bg-gradient-to-br from-orange-500 to-red-500 p-6 rounded-xl shadow-xl text-white text-center transform hover:scale-105 transition-all">
+          <Flag className="w-12 h-12 mx-auto mb-3" />
+          <div className="text-5xl font-black mb-2">89</div>
+          <div className="text-lg font-semibold">Үйл явдал 1939</div>
+        </div>
+        <div className="bg-gradient-to-br from-yellow-500 to-orange-500 p-6 rounded-xl shadow-xl text-white text-center transform hover:scale-105 transition-all">
+          <Globe className="w-12 h-12 mx-auto mb-3" />
+          <div className="text-5xl font-black mb-2">65+</div>
+          <div className="text-lg font-semibold">Улс оронд</div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-purple-100 to-pink-100 border-l-8 border-purple-500 p-6 rounded-lg">
+        <p className="text-2xl font-bold text-purple-800 text-center">
+          🔥 Хүмүүс эрхийнхээ төлөө илүү хүчтэй тэмцэж эхэллээ!
+        </p>
+      </div>
+    </div>,
+
+    // СЛАЙД 6: Дүгнэлт - Хүчирхэг
+    <div key="slide5" className="space-y-6 animate-fade-in">
+      <div className="text-center mb-8">
+        <div className="text-7xl mb-4">🌈</div>
+        <h2 className="text-5xl font-bold text-gray-800 mb-2">Юу сурсан бэ?</h2>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-red-500 to-pink-500 p-8 rounded-2xl shadow-2xl text-white">
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">😢</div>
+            <h3 className="text-3xl font-bold mb-4">Хэцүү үе байсан</h3>
+          </div>
+          <div className="space-y-4 text-lg font-semibold">
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">95%</div>
+              <div>Засаглалын эрхгүй</div>
+            </div>
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">750м</div>
+              <div>Хүн колончлогдсон</div>
+            </div>
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">32%</div>
+              <div>Дэлхий эзэмшигдсэн</div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-8 rounded-2xl shadow-2xl text-white">
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">💪</div>
+            <h3 className="text-3xl font-bold mb-4">Гэхдээ найдвар байсан!</h3>
+          </div>
+          <div className="space-y-4 text-lg font-semibold">
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">640%</div>
+              <div>Эсэргүүцэл өссөн</div>
+            </div>
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">89</div>
+              <div>Том үйл явдал</div>
+            </div>
+            <div className="flex items-center gap-3 bg-white bg-opacity-20 p-4 rounded-lg">
+              <div className="text-4xl">✊</div>
+              <div>Хүмүүс тэмцсэн</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-10 rounded-2xl shadow-2xl text-white mt-8">
+        <div className="text-center">
+          <Award className="w-20 h-20 mx-auto mb-6" />
+          <h3 className="text-4xl font-black mb-6">Түүхийн сургамж 📚</h3>
+          <div className="grid grid-cols-3 gap-6 text-center">
+            <div>
+              <div className="text-5xl font-black mb-2">1945</div>
+              <div className="text-lg font-semibold">Дайн дууссан</div>
+              <div className="text-sm opacity-90">Колони эцэс эхэллээ</div>
+            </div>
+            <div>
+              <div className="text-5xl font-black mb-2">1960</div>
+              <div className="text-lg font-semibold">"Африкийн жил"</div>
+              <div className="text-sm opacity-90">17 улс тусгаар тогтнов</div>
+            </div>
+            <div>
+              <div className="text-5xl font-black mb-2">100+</div>
+              <div className="text-lg font-semibold">Шинэ улс</div>
+              <div className="text-sm opacity-90">Чөлөөлөгдсөн</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-100 border-8 border-yellow-400 p-8 rounded-2xl">
+        <p className="text-3xl font-black text-center text-yellow-800">
+          🌟 Эрх чөлөө бол бүгдийн хамгийн чухал зүйл! 🌟
+        </p>
+      </div>
+    </div>
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-4 sm:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8">
-          {/* Header */}
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-2">
-              {slides[currentSlide].title}
-            </h1>
-            <p className="text-md sm:text-xl text-gray-600">{slides[currentSlide].subtitle}</p>
-          </div>
-
-          {/* Content - min-h-г илүү уян хатан болгосон */}
-          <div className="min-h-[450px] sm:min-h-[500px] mb-6 sm:mb-8">
-            {slides[currentSlide].content}
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t-2">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-3xl shadow-2xl p-10 border-4 border-purple-200">
+          {slides[currentSlide]}
+          
+          <div className="flex justify-between items-center mt-10 pt-8 border-t-4 border-purple-200">
             <button
-              onClick={prevSlide}
-              className="px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
               disabled={currentSlide === 0}
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xl font-bold rounded-xl disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed hover:scale-105 transition-all shadow-lg"
             >
-              ← Өмнөх
+              ⬅️ Өмнөх
             </button>
             
-            <div className="flex items-center gap-2">
+            <div className="flex gap-3">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
-                  className={`w-3 h-3 rounded-full transition ${
-                    idx === currentSlide ? 'bg-blue-600 w-6 sm:w-8' : 'bg-gray-300'
+                  className={`transition-all rounded-full ${
+                    idx === currentSlide 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 w-16 h-5' 
+                      : 'bg-gray-300 w-5 h-5 hover:bg-gray-400'
                   }`}
-                  aria-label={`Слайд ${idx + 1}`}
                 />
               ))}
             </div>
-
+            
             <button
-              onClick={nextSlide}
-              className="px-4 py-2 sm:px-6 sm:py-3 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              onClick={() => setCurrentSlide(Math.min(slides.length - 1, currentSlide + 1))}
               disabled={currentSlide === slides.length - 1}
+              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold rounded-xl disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed hover:scale-105 transition-all shadow-lg"
             >
-              Дараах →
+              Дараах ➡️
             </button>
           </div>
-
-          {/* Footer */}
-          <div className="text-center mt-4 text-xs sm:text-sm text-gray-500">
-            Слайд {currentSlide + 1} / {slides.length}
+          
+          <div className="text-center mt-6">
+            <span className="text-2xl font-bold text-purple-600 bg-purple-100 px-6 py-3 rounded-full">
+              Слайд {currentSlide + 1} / {slides.length} 📄
+            </span>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default FrenchColonialRights;
+export default ColonialRightsStory;
