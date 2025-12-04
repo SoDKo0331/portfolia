@@ -418,14 +418,7 @@ const FrenchColonialPuzzle = () => {
   };
 
   const resetPuzzle = () => {
-    setUserAnswers({});
-    setShowResults({});
-    setShowHint({});
-    setTotalScore(0);
-    setStreak(0);
-    setCurrentPuzzle(0);
-    setTimeLeft(null);
-    setIsTimerActive(false);
+    alert("Асуулт дуусан байна доошлуулаад дүгнэлт хэсгийг уншаарай");
   };
 
   const startPuzzle = (puzzle) => {
