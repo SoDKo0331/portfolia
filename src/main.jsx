@@ -5,6 +5,6 @@ import "./index.css"; // <- THIS IS CRUCIAL
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <FrenchColonialRights />
+    <ArtHistoryQuiz />
   </React.StrictMode>
 );
