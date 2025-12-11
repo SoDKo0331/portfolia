@@ -83,13 +83,24 @@ const questions = [
 ];
 
 export default function ArtHistoryQuiz() {
-  const [gameState, setGameState] = useState('lobby'); // lobby, playing, results
+  const [gameState, setGameState] = useState('lobby');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(20);
   const [answers, setAnswers] = useState([]);
   const [showCorrect, setShowCorrect] = useState(false);
+  
+  // Mini game states
+  const [miniGameType, setMiniGameType] = useState(null);
+  const [miniGameCards, setMiniGameCards] = useState([]);
+  const [flippedCards, setFlippedCards] = useState([]);
+  const [matchedCards, setMatchedCards] = useState([]);
+  const [fallingItems, setFallingItems] = useState([]);
+  const [basketPosition, setBasketPosition] = useState(50);
+  const [caughtItems, setCaughtItems] = useState(0);
+  const [miniGameScore, setMiniGameScore] = useState(0);
+  const [miniGameTime, setMiniGameTime] = useState(15);
 
   useEffect(() => {
     if (gameState === 'playing' && timeLeft > 0 && !showCorrect) {
@@ -99,6 +110,45 @@ export default function ArtHistoryQuiz() {
       handleTimeout();
     }
   }, [timeLeft, gameState, showCorrect]);
+
+  useEffect(() => {
+    if (gameState === 'minigame' && miniGameTime > 0) {
+      const timer = setTimeout(() => setMiniGameTime(miniGameTime - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (gameState === 'minigame' && miniGameTime === 0) {
+      continueToNextQuestion();
+    }
+  }, [miniGameTime, gameState]);
+
+  useEffect(() => {
+    if (gameState === 'minigame' && miniGameType === 1 && miniGameTime > 0) {
+      const interval = setInterval(() => {
+        setFallingItems(prev => {
+          const newItems = [...prev];
+          if (Math.random() > 0.65 && newItems.length < 4) {
+            newItems.push({
+              id: Date.now() + Math.random(),
+              emoji: ['🎨', '🖼️', '🏛️', '🎭', '🗿', '✨'][Math.floor(Math.random() * 6)],
+              x: Math.random() * 80 + 10,
+              y: 0
+            });
+          }
+          return newItems.map(item => ({
+            ...item,
+            y: item.y + 2.5
+          })).filter(item => {
+            if (item.y > 82 && Math.abs(item.x - basketPosition) < 10) {
+              setCaughtItems(c => c + 1);
+              setMiniGameScore(s => s + 150);
+              return false;
+            }
+            return item.y < 100;
+          });
+        });
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [gameState, miniGameType, basketPosition, miniGameTime]);
 
   const startGame = () => {
     setGameState('playing');
@@ -143,13 +193,74 @@ export default function ArtHistoryQuiz() {
 
   const nextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
-      setTimeLeft(20);
-      setShowCorrect(false);
+      setGameState('minigame');
+      initMiniGame();
     } else {
       setGameState('results');
     }
+  };
+
+  const initMiniGame = () => {
+    const gameType = Math.floor(Math.random() * 2);
+    setMiniGameType(gameType);
+    setMiniGameTime(15);
+    setMiniGameScore(0);
+    
+    if (gameType === 0) {
+      const cards = ['🎨', '🖼️', '🏛️', '🎭'];
+      const doubled = [...cards, ...cards].sort(() => Math.random() - 0.5);
+      setMiniGameCards(doubled.map((emoji, i) => ({ id: i, emoji })));
+      setFlippedCards([]);
+      setMatchedCards([]);
+    } else {
+      setFallingItems([]);
+      setCaughtItems(0);
+      setBasketPosition(50);
+    }
+  };
+
+  const continueToNextQuestion = () => {
+    setScore(score + miniGameScore);
+    setCurrentQuestion(currentQuestion + 1);
+    setSelectedAnswer(null);
+    setTimeLeft(20);
+    setShowCorrect(false);
+    setGameState('playing');
+  };
+
+  const handleCardClick = (id) => {
+    if (flippedCards.length === 2 || matchedCards.includes(id) || flippedCards.includes(id)) return;
+    
+    const newFlipped = [...flippedCards, id];
+    setFlippedCards(newFlipped);
+    
+    if (newFlipped.length === 2) {
+      const [first, second] = newFlipped;
+      if (miniGameCards[first].emoji === miniGameCards[second].emoji) {
+        setMatchedCards([...matchedCards, first, second]);
+        setMiniGameScore(miniGameScore + 300);
+        setFlippedCards([]);
+        
+        if (matchedCards.length + 2 === miniGameCards.length) {
+          setTimeout(() => continueToNextQuestion(), 1000);
+        }
+      } else {
+        setTimeout(() => setFlippedCards([]), 800);
+      }
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    setBasketPosition(Math.max(5, Math.min(95, x)));
+  };
+
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((touch.clientX - rect.left) / rect.width) * 100;
+    setBasketPosition(Math.max(5, Math.min(95, x)));
   };
 
   const getButtonColor = (index) => {
@@ -195,7 +306,7 @@ export default function ArtHistoryQuiz() {
               </div>
               <div className="text-center">
                 <Clock className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-                <p className="text-white font-bold">20 секунд</p>
+                <p className="text-white font-bold">+ Бонус</p>
               </div>
             </div>
             <button
@@ -205,6 +316,108 @@ export default function ArtHistoryQuiz() {
               🚀 ТОГЛООМ ЭХЛҮҮЛЭХ
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (gameState === 'minigame') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 max-w-4xl w-full border-2 border-white/20">
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-center flex-1">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                🎮 Бонус тоглоом!
+              </h2>
+              <p className="text-yellow-400 text-lg">Нэмэлт оноо цуглуулаарай</p>
+            </div>
+            <div className="bg-yellow-400/20 rounded-2xl px-6 py-3 border-2 border-yellow-400">
+              <p className="text-yellow-400 text-sm">Хугацаа</p>
+              <p className="text-white text-3xl font-bold">{miniGameTime}с</p>
+            </div>
+          </div>
+
+          <div className="text-center mb-6">
+            <div className="inline-block bg-white/10 rounded-2xl px-8 py-4 border border-white/20">
+              <p className="text-white text-sm mb-1">Бонус оноо</p>
+              <p className="text-yellow-400 text-4xl font-bold">+{miniGameScore}</p>
+            </div>
+          </div>
+
+          {miniGameType === 0 ? (
+            <div>
+              <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-2xl p-4 mb-6 border border-pink-500/30">
+                <p className="text-white text-center text-lg font-semibold">
+                  🎴 Хос олох - Ижил хөзрийг олоорой! (+300 оноо)
+                </p>
+              </div>
+              <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+                {miniGameCards.map((card) => (
+                  <button
+                    key={card.id}
+                    onClick={() => handleCardClick(card.id)}
+                    disabled={matchedCards.includes(card.id)}
+                    className={`aspect-square rounded-2xl text-5xl flex items-center justify-center transform transition-all duration-300 ${
+                      flippedCards.includes(card.id) || matchedCards.includes(card.id)
+                        ? 'bg-gradient-to-br from-green-400 to-emerald-600 scale-105 rotate-0'
+                        : 'bg-gradient-to-br from-blue-500 to-purple-600 hover:scale-105 hover:rotate-3'
+                    } shadow-xl border-2 border-white/30 disabled:opacity-100`}
+                  >
+                    {flippedCards.includes(card.id) || matchedCards.includes(card.id) ? (
+                      <span className="animate-bounce">{card.emoji}</span>
+                    ) : (
+                      '❓'
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl p-4 mb-6 border border-blue-500/30">
+                <p className="text-white text-center text-lg font-semibold">
+                  🎯 Урлаг барих - Унаж буй зүйлсийг барь! ({caughtItems} барьсан, +150 оноо)
+                </p>
+              </div>
+              <div 
+                className="relative bg-gradient-to-b from-blue-900/50 to-purple-900/50 rounded-3xl h-96 overflow-hidden cursor-none border-4 border-white/20 shadow-2xl"
+                onMouseMove={handleMouseMove}
+                onTouchMove={handleTouchMove}
+              >
+                {fallingItems.map(item => (
+                  <div
+                    key={item.id}
+                    className="absolute text-4xl transition-all duration-50 drop-shadow-lg"
+                    style={{
+                      left: `${item.x}%`,
+                      top: `${item.y}%`,
+                      transform: 'translate(-50%, -50%)',
+                      animation: 'spin 2s linear infinite'
+                    }}
+                  >
+                    {item.emoji}
+                  </div>
+                ))}
+                <div
+                  className="absolute bottom-4 text-6xl transition-all duration-100 drop-shadow-2xl"
+                  style={{
+                    left: `${basketPosition}%`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  🧺
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={continueToNextQuestion}
+            className="w-full mt-6 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold text-xl py-4 px-8 rounded-2xl transform hover:scale-105 transition-all shadow-xl border-2 border-green-300"
+          >
+            ⏭️ Үргэлжлүүлэх
+          </button>
         </div>
       </div>
     );
@@ -240,7 +453,7 @@ export default function ArtHistoryQuiz() {
                       {answer?.correct ? '✅' : '❌'}
                     </span>
                     <div className="flex-1">
-                      <p className="text-white font-semibold">Зураг {idx + 1}</p>
+                      <p className="text-white font-semibold">Асуулт {idx + 1}</p>
                       {answer && (
                         <p className="text-yellow-400 text-sm">
                           +{answer.points} оноо
@@ -270,7 +483,6 @@ export default function ArtHistoryQuiz() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
       <div className="max-w-4xl mx-auto py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="bg-white/10 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
             <p className="text-white text-sm">Асуулт {currentQuestion + 1}/{questions.length}</p>
@@ -286,7 +498,6 @@ export default function ArtHistoryQuiz() {
           </div>
         </div>
 
-        {/* Timer */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 mb-6 border border-white/20">
           <div className="flex items-center justify-between">
             <Clock className="w-8 h-8 text-white" />
@@ -306,7 +517,6 @@ export default function ArtHistoryQuiz() {
           </div>
         </div>
 
-        {/* Question */}
         <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 mb-6 border-2 border-white/20">
           <div className="text-center mb-6">
             <div className="text-6xl mb-4">{question.image}</div>
@@ -316,7 +526,6 @@ export default function ArtHistoryQuiz() {
           </div>
         </div>
 
-        {/* Answers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {question.options.map((option, index) => (
             <button
