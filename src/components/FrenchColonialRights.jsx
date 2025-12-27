@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Crosshair, Trophy, Plus, Minus, RotateCcw, Save, TrendingUp, Award, Target } from 'lucide-react';
 
-interface TeamKills {
-  teamId: number;
-  teamName: string;
-  kills: number;
-  deaths: number;
-  assists: number;
-}
-
-const KillTracker: React.FC = () => {
-  const [teams, setTeams] = useState<TeamKills[]>([]);
-  const [numTeams, setNumTeams] = useState<number>(11);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+const KillTracker = () => {
+  const [teams, setTeams] = useState([]);
+  const [numTeams, setNumTeams] = useState(11);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadKillData();
@@ -73,7 +65,7 @@ const KillTracker: React.FC = () => {
   };
 
   const initializeTeams = () => {
-    const newTeams: TeamKills[] = [];
+    const newTeams = [];
     for (let i = 1; i <= numTeams; i++) {
       newTeams.push({
         teamId: i,
@@ -87,7 +79,7 @@ const KillTracker: React.FC = () => {
     setIsInitialized(true);
   };
 
-  const updateTeamName = (teamId: number, newName: string) => {
+  const updateTeamName = (teamId, newName) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId ? { ...team, teamName: newName } : team
@@ -95,7 +87,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const updateKills = (teamId: number, change: number) => {
+  const updateKills = (teamId, change) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -105,7 +97,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const setKills = (teamId: number, value: number) => {
+  const setKills = (teamId, value) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -115,7 +107,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const updateDeaths = (teamId: number, change: number) => {
+  const updateDeaths = (teamId, change) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -125,7 +117,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const setDeaths = (teamId: number, value: number) => {
+  const setDeaths = (teamId, value) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -135,7 +127,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const updateAssists = (teamId: number, change: number) => {
+  const updateAssists = (teamId, change) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -145,7 +137,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const setAssists = (teamId: number, value: number) => {
+  const setAssists = (teamId, value) => {
     setTeams(prevTeams =>
       prevTeams.map(team =>
         team.teamId === teamId
@@ -155,7 +147,7 @@ const KillTracker: React.FC = () => {
     );
   };
 
-  const calculateKD = (kills: number, deaths: number): string => {
+  const calculateKD = (kills, deaths) => {
     if (deaths === 0) return kills.toFixed(2);
     return (kills / deaths).toFixed(2);
   };
