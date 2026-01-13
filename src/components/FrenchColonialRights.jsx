@@ -1,498 +1,1137 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Search, Heart, Share2, Bookmark, ChevronRight, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Brain, FileText, Languages, Plus, Check, X, Search, Filter, ChevronRight, Star, Calendar, TrendingUp, Eye, LogOut, User, CreditCard, Lock, Mail, Shield } from 'lucide-react';
 
-export default function HeyMongolHomepage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('All Posts');
-  const [scrolled, setScrolled] = useState(false);
-  const [savedPosts, setSavedPosts] = useState([]);
-  const heroRef = useRef(null);
+export default function JapaneseN3App() {
+  const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [showAuthModal, setShowAuthModal] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState('kanji');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterLevel, setFilterLevel] = useState('all');
+  const [learnedItems, setLearnedItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [authForm, setAuthForm] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    name: ''
+  });
+  const [newItem, setNewItem] = useState({
+    category: 'kanji',
+    character: '',
+    reading: '',
+    readingCyrillic: '', // Автомат кирилл
+    meaning: '',
+    example: '',
+    notes: ''
+  });
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+  // Кирилл-Латин транслит
+  const transliterateToLatin = (cyrillic) => {
+    const map = {
+      'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+      'ж': 'j', 'з': 'z', 'и': 'i', 'й': 'i', 'к': 'k', 'л': 'l', 'м': 'm',
+      'н': 'n', 'о': 'o', 'ө': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
+      'у': 'u', 'ү': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh',
+      'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+      'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
+      'Ж': 'J', 'З': 'Z', 'И': 'I', 'Й': 'I', 'К': 'K', 'Л': 'L', 'М': 'M',
+      'Н': 'N', 'О': 'O', 'Ө': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T',
+      'У': 'U', 'Ү': 'U', 'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh',
+      'Щ': 'Shch', 'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const filters = ['All Posts', 'Culture', 'Landscape', 'Nomadic Life', 'Events', 'Food', 'Adventure'];
-
-  const posts = [
-    {
-      id: 1,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDALX3sc66nD5lCQxJJK1iwjh0l_fcRUUBgQ8a28dWM_iGXIkrO0p4g0wfq0R9J3HsOT_3uSexQcGt0Vd0GxfJMIDbDiY5sK26San_x5CDSWIGNZs4hYU58gwl9h3RGHPE9_vShxgiZju2kwnaAYFSusEuDa-pZXIGUMIDDT1fK43dMraP95VbXb1bFjD4RfYCyZoIPxwmv-bOmrX-wSk3QFRnszey6JTxgCishFGmOOyxorGv1Qws2mYB7ebJdz6twIkTA3KsrzSnO',
-      category: 'Nomadic Life',
-      time: '2 hrs ago',
-      title: 'Traditional Ger Construction',
-      description: 'Witness the intricate process of assembling a traditional Mongolian Ger. A practice passed down through generations that perfectly adapts to the nomadic lifestyle.',
-      author: 'Bataar',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA5I44EMmvNSL-yl37U1oeGHvGO0cH2Uam3OBQYyQO2eZJ1mNyjmvXJLNrDc7aFtEv6Ca4D3o0U1aGvlPpY2opcTgnE1GYwbICz2kJcDXXdqApwkuRe3sESh1u98Xtr9mqkbvVCgeXyubksg0mTlPq33dDguWU2Sw8zLteepn6jjzwurbb-DqlLEvEspedK36cIs0wFjzy9W3TaNTe4_OpybPWHiXWaUJKppbBuuwAP855h5KbVIiGOzPdkAgHrjNlQLO0JWpJpn0O4',
-      type: 'gallery',
-      trending: true
-    },
-    {
-      id: 2,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACEfGbX8pdUVhxzBv384pFzr2_XWzNCM5oR6LUzvd2fIti-rnBF6_GbtWJSV_Hii7Hdv9VyY_OmU7SMKG7f92Oj2dU3QiM0yGB9TY-AZj-ThbFBGND4qbL-eVi6gQR0shH9b_-N0gX3l3vBiVmSNDygfrNrW5J6QipPTvKNf9lgYXUSgcYz-yXjfcMFfU9XeLB1pKThiYaLC34ch9hFFXRX6mB9Ur3G-MX39HG0l1ZPZ_yBg443abKCZ295kU1izu3iTWJYWMR-h7E',
-      category: 'Culture',
-      time: '5 hrs ago',
-      title: 'Golden Eagle Festival Highlights',
-      description: 'The annual Golden Eagle Festival in Bayan-Ulgii province showcases the ancient tradition of eagle hunting. See the majestic birds in action.',
-      author: 'Sarnai',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDltIpyA5uUpLPVOxUAM7Z7uRZ6BcsQmSjMxHrByB2-lpFlUXTICqsDcPcHSCVmPt3vBJEhyioNbIP5U1VDmVrzzu8TCrIbgOPIcbEZzQWgeAs5a4WNKctsCmnhJIyXLFLSWk-IeC_rbmgE7qugsGLqG8A7ys2uRnw-2Clbqvv-KHZhJoKl8cAeEfyK2NH8EGeqKUoXZcWssnKWsyyOgOiG12X5QhRom5FyvWw3nG-dxX98zIWGWZeK4MSVjwC__3WHT0VBc1ohxzAX',
-      type: 'video',
-      trending: true
-    },
-    {
-      id: 3,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApfrKO1-oiB3oZoX_HgG9zsZJsnukdBfXZ9TgonmSCPzOilxo_tI-z44fq8N06nqsmmQyjVqXwVbOfr8MwPPZUceZ-V7BLovXyLnoD_Ny8ij83n0I4guhk9pbL-e-5cUsFETH_LPkxpWwuWHPom0m6JsAhtDfddDvHjTFTbcEQVMtQVMiWwOONAJ-AQp6j_P2ZW-MWp8XqcIRWnGQMXGJ4lhYC9wBm87znEBAmSTBf06hh1gnNJWqaNPUKbRdNpAQbOZB5ADaAZM6V',
-      category: 'Landscape',
-      time: '1 day ago',
-      title: 'Singing Sands of the Gobi',
-      description: 'Khongoryn Els, also known as the Singing Sands, are some of the largest and most spectacular sand dunes in Mongolia.',
-      author: 'Khulan',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC-hkHcpjLaMwNtovk_E260HZ0aUaVLUsdmJmgdefljVfLovVKszbPljjMhVaEhSNRFrtV2Je9rxg5jRJSQDJQvGU2vSe9ahWkCrFLwpVUgvVsR8Ao6KdhAbzLaulZgdNNVuNhEZJMQC2uYebla02IUh0RTfcDDJckTTJ7Ebqd1XEMNLDn7LuZitBK0lMpkldT9Ec6Ix2FRKpoe_naqHn_vw-CeD4XiUFdxtpsUbgcsfP3wvN08Y3-qcXNvTP3OwFSIOWUk8RJxq615',
-      type: 'image'
-    },
-    {
-      id: 4,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBqLWMwmZaVGZH9YvbYtBFSQ9Gy6H3fF1nMZKmjcc6A_MdUZTX3GIF0ZJcnAwQd11V1Oxha1eokG6LXTn01SiuAggSRzKpxNz90LOeAndDGkrBqHZUN24G9wbICIZKwIfhMxmUCLSIGG2Yv4j5FmbvVocPn4rLmER4WCVzUiIq80xBQs-iW9cMFlEcOyJuqTVEGv4m8dA4Yl4hNNDLg6CR1xLR4Qigx5E41QldJIMIX-QXYzNWzy9kL72aUA2JVGDVKHk0_xoUW7i12',
-      category: 'Adventure',
-      time: '2 days ago',
-      title: 'Horse Trekking in Terelj',
-      description: 'Experience the freedom of galloping through the open plains of Gorkhi-Terelj National Park on horseback.',
-      author: 'Gantulga',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDsdzCcDTtSCkhnxTw-1yV9GNPGaln3iUtxymDFxkOXuhQQY5Zx9e6F2CX4Z1EglVkMNLrPEPrX7Pl8g_ASMFVn1C3X6K5qfqHILdhyQPXTaVcg1qf2ctEMfpIG2Wp69OQ8e_62K021_bDA5XTLHaXKmCOBJ2vvdDHzg1IQaZtXr79XkRhUiph3QjbWaDEERSbJzvsKyBuQCqW1xTYvfOhU_sPSPdk3ym2myLzZME2dNaaiKJTdJvIDHqNb3tOKCEWHOABntftlHpc6',
-      type: 'image'
-    },
-    {
-      id: 5,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZM2AUCfMkNXPnnfKrNiOSVDlj2CNwqMgT0wuIJ4w00ety4y_WOqoQ-ihK6IVsMvqKGJN8LKKvXy1x64X54TKej9u6k_HHERQ4uB0bipXV-a5e649Ad92pRm9AJ3gyqdTU3eGRK4TEgSbON_wBhreGFHwBliCjvyJwf3MqPoEQjokDl6OVnbFoxRTIPQqH5fh4fAJve8jBg0xtCH-6OCuhGRjfZQG0FQBP4_gpwGGR-W_Va1Y5qPv2cRefKwZSQxlPTI3Mbd5lQjdw',
-      category: 'Food',
-      time: '3 days ago',
-      title: 'Taste of Naadam: Khuushuur',
-      description: 'Deep-fried meat pastries that are an essential part of the Naadam Festival experience. Crispy, juicy, and delicious.',
-      author: 'Tuya',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRG6DxxUSzIFb4U8kVVTVDeGYgUACSLNdSW8lZImmZ8hjJItANz_FTtPEhhsJaA5jcI9QmZ5_DG_CPOivcGPbxftPrzlW_TEbXW8BT--2JIn6xTSfJ6ITZuvdqwjFgSxEqn0O_s7DOQXYn74sGDCICdJuOPAt0Ynrkd7PNs8QHpQvshl0HdW85iqk1ucpl7fsytV0XvwcpTtsmmfr2JDfEcdHyH5rUwENwnjIXLC1vY8GkQCJ-_X-Vxp5uJ7GlDn4BLzaPMNh_4fB7',
-      type: 'image'
-    },
-    {
-      id: 6,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBCVOkjwE9sUizwRBfquKGh7Ldp5bKqUJKAXwEcjztXvNTWiZBwbk7Mep3M_dztTxwBqtwlYrHRrZefDBQYTS0OgsXNBPtDweKDIPGCkAVzcrcAMJDurxGAJZ5O-iVXQT410ccBI2HCeaMxKPxaX5aPh-Pby-4nxaviPD6EEB2k8DtvG0doejNwZuXdbYrgVsZicq0d5V5HEzT1-aWyL-bR9maNF26XZVRXcdhYe1NyElUuK_BBZlBaCwokLuZG9EgfjMtQ5lkX8MpM',
-      category: 'City Life',
-      time: '4 days ago',
-      title: 'Winter Nights in Ulaanbaatar',
-      description: 'Exploring the vibrant nightlife and snowy streets of the capital city during the coldest months of the year.',
-      author: 'Bold',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0Jt5GKyL4pN9XHJdH1Oov-ComPpXoNUy1ytWMQ7EKEz7ZpgmNEmgfKhxCqccmq7xzZdbD9tueVApn4E4Itj-vgP2G39C3LiaE-KDou6dp0IQuqfj9gcETvYsSc7Uq9KRFALx_c_JrE1KkgoVobbt761a3ifsAGOOuTxu5n8JoIi62LJR0_UggyPbP3SFF_79iQbdIdHGIa6VvHIXMxPyTpFsJ7s-d5W3Hk7k0VnqE7BKynOPg4TC-MYa7diyemFZeN8dDTGRZlPtD',
-      type: 'image'
-    }
-  ];
-
-  const toggleSave = (postId) => {
-    setSavedPosts(prev => 
-      prev.includes(postId) 
-        ? prev.filter(id => id !== postId)
-        : [...prev, postId]
-    );
+    
+    return cyrillic.split('').map(char => map[char] || char).join('');
   };
 
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] font-['Montserrat',sans-serif] transition-colors duration-300">
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'bg-white/80 dark:bg-[#1E293B]/80 backdrop-blur-xl shadow-lg border-b border-[#104882]/20' 
-          : 'bg-white dark:bg-[#1E293B] border-b border-gray-200/50 dark:border-gray-800/50'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <a href="#" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#104882] to-[#0a3566] flex items-center justify-center border-2 border-[#F4B400] shadow-lg shadow-[#F4B400]/20 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-[#F4B400] font-black text-xs tracking-wider transform -rotate-90">HEY</span>
-                </div>
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#F4B400]/20 to-[#104882]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <div className="font-black text-2xl tracking-tight">
-                <span className="text-[#F4B400]">HEY!</span>
-                <span className="text-[#104882] dark:text-white ml-1">MONGOL</span>
-              </div>
-            </a>
+  // Автомат транслит - Кирилл оруулахад латинаар автоматаар гарна
+  useEffect(() => {
+    if (newItem.readingCyrillic) {
+      const latin = transliterateToLatin(newItem.readingCyrillic);
+      setNewItem(prev => ({ ...prev, reading: latin }));
+    }
+  }, [newItem.readingCyrillic]);
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              {['Home', 'Discover', 'About', 'Contact'].map((item) => (
-                <a 
-                  key={item}
-                  href="#" 
-                  className="relative text-sm font-semibold text-[#1E293B] dark:text-[#E2E8F0] hover:text-[#104882] dark:hover:text-[#F4B400] transition-colors group"
-                >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F4B400] group-hover:w-full transition-all duration-300" />
-                </a>
-              ))}
-              <button className="px-6 py-2.5 bg-[#104882] text-white rounded-full font-bold text-sm hover:bg-[#0a3566] transition-all duration-300 shadow-lg shadow-[#104882]/30 hover:shadow-[#104882]/50 hover:scale-105">
-                Subscribe
-              </button>
-            </div>
+  // Check authentication and payment status
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
-            {/* Mobile Menu Button */}
+  const checkAuth = async () => {
+    try {
+      setLoading(true);
+      const authData = await window.storage.get('user-auth');
+      if (authData && authData.value) {
+        const userData = JSON.parse(authData.value);
+        setUser(userData);
+        setShowAuthModal(false);
+        
+        // Check payment status
+        if (!userData.isPaid) {
+          setShowPaymentModal(true);
+        } else {
+          loadData(userData.email);
+        }
+      }
+    } catch (error) {
+      console.log('No user logged in');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadData = async (email) => {
+    try {
+      const result = await window.storage.get(`n3-items-${email}`);
+      if (result && result.value) {
+        setLearnedItems(JSON.parse(result.value));
+      }
+    } catch (error) {
+      console.log('No saved data yet');
+      setLearnedItems([]);
+    }
+  };
+
+  const saveData = async (items) => {
+    if (!user) return;
+    try {
+      await window.storage.set(`n3-items-${user.email}`, JSON.stringify(items));
+    } catch (error) {
+      console.error('Failed to save data:', error);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!authForm.email || !authForm.password) {
+      alert('И-мэйл болон нууц үг оруулна уу!');
+      return;
+    }
+
+    try {
+      // Check if user exists
+      const userData = await window.storage.get(`user-${authForm.email}`);
+      
+      if (!userData || !userData.value) {
+        alert('Хэрэглэгч олдсонгүй! Бүртгүүлнэ үү.');
+        return;
+      }
+
+      const storedUser = JSON.parse(userData.value);
+      
+      if (storedUser.password !== authForm.password) {
+        alert('Нууц үг буруу байна!');
+        return;
+      }
+
+      // Login successful
+      const loggedInUser = {
+        email: storedUser.email,
+        name: storedUser.name,
+        isPaid: storedUser.isPaid || false,
+        registeredAt: storedUser.registeredAt
+      };
+
+      await window.storage.set('user-auth', JSON.stringify(loggedInUser));
+      setUser(loggedInUser);
+      setShowAuthModal(false);
+
+      if (!loggedInUser.isPaid) {
+        setShowPaymentModal(true);
+      } else {
+        loadData(loggedInUser.email);
+      }
+    } catch (error) {
+      alert('Алдаа гарлаа: ' + error.message);
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!authForm.email || !authForm.password || !authForm.name) {
+      alert('Бүх талбарыг бөглөнө үү!');
+      return;
+    }
+
+    if (authForm.password !== authForm.confirmPassword) {
+      alert('Нууц үг таарахгүй байна!');
+      return;
+    }
+
+    if (!authForm.email.includes('@')) {
+      alert('И-мэйл хаяг буруу байна!');
+      return;
+    }
+
+    try {
+      // Check if user already exists
+      const existingUser = await window.storage.get(`user-${authForm.email}`);
+      if (existingUser && existingUser.value) {
+        alert('Энэ и-мэйл хаягаар бүртгэлтэй байна!');
+        return;
+      }
+
+      const newUser = {
+        email: authForm.email,
+        password: authForm.password,
+        name: authForm.name,
+        isPaid: false,
+        registeredAt: new Date().toISOString()
+      };
+
+      await window.storage.set(`user-${authForm.email}`, JSON.stringify(newUser));
+      
+      alert('Амжилттай бүртгүүллээ! Одоо нэвтэрнэ үү.');
+      setAuthMode('login');
+      setAuthForm({ email: authForm.email, password: '', confirmPassword: '', name: '' });
+    } catch (error) {
+      alert('Бүртгэл амжилтгүй: ' + error.message);
+    }
+  };
+
+  const handlePayment = async (method) => {
+    // Social Pay simulation
+    const confirmed = confirm(
+      `${method === 'social' ? 'Social Pay' : method === 'qpay' ? 'QPay' : 'Монпэй'}-ээр 50,000₮ төлөх үү?\n\n(Энэ нь демо хувилбар - бодит төлбөр төлөгдөхгүй)`
+    );
+
+    if (confirmed) {
+      try {
+        // Update user payment status
+        const updatedUser = { ...user, isPaid: true, paidAt: new Date().toISOString(), paymentMethod: method };
+        
+        await window.storage.set('user-auth', JSON.stringify(updatedUser));
+        await window.storage.set(`user-${user.email}`, JSON.stringify({
+          email: user.email,
+          password: authForm.password,
+          name: user.name,
+          isPaid: true,
+          paidAt: new Date().toISOString(),
+          paymentMethod: method,
+          registeredAt: user.registeredAt
+        }));
+
+        setUser(updatedUser);
+        setShowPaymentModal(false);
+        loadData(updatedUser.email);
+        
+        alert('🎉 Төлбөр амжилттай! Одоо бүх онцлогууд ашиглах боломжтой.');
+      } catch (error) {
+        alert('Төлбөрт алдаа гарлаа: ' + error.message);
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm('Гарах уу?')) {
+      try {
+        await window.storage.delete('user-auth');
+        setUser(null);
+        setLearnedItems([]);
+        setShowAuthModal(true);
+        setActiveTab('dashboard');
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+  };
+
+  const addLearnedItem = () => {
+    if (!newItem.character || !newItem.meaning) {
+      alert('Үндсэн мэдээллийг бөглөнө үү!');
+      return;
+    }
+
+    const item = {
+      ...newItem,
+      id: Date.now(),
+      dateAdded: new Date().toISOString(),
+      reviewCount: 0,
+      nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      mastery: 0
+    };
+
+    const updated = [...learnedItems, item];
+    setLearnedItems(updated);
+    saveData(updated);
+    
+    setNewItem({
+      category: currentCategory,
+      character: '',
+      reading: '',
+      readingCyrillic: '',
+      meaning: '',
+      example: '',
+      notes: ''
+    });
+    setShowAddModal(false);
+  };
+
+  const deleteItem = (id) => {
+    const updated = learnedItems.filter(item => item.id !== id);
+    setLearnedItems(updated);
+    saveData(updated);
+  };
+
+  const reviewItem = (id, correct) => {
+    const updated = learnedItems.map(item => {
+      if (item.id === id) {
+        const newReviewCount = item.reviewCount + 1;
+        const masteryChange = correct ? 10 : -5;
+        const newMastery = Math.max(0, Math.min(100, item.mastery + masteryChange));
+        
+        const intervals = [1, 3, 7, 14, 30, 60, 90];
+        const intervalIndex = Math.min(newReviewCount, intervals.length - 1);
+        const nextReviewDate = new Date(Date.now() + intervals[intervalIndex] * 24 * 60 * 60 * 1000);
+
+        return {
+          ...item,
+          reviewCount: newReviewCount,
+          mastery: newMastery,
+          nextReview: nextReviewDate.toISOString(),
+          lastReviewed: new Date().toISOString()
+        };
+      }
+      return item;
+    });
+
+    setLearnedItems(updated);
+    saveData(updated);
+  };
+
+  const categories = [
+    { id: 'kanji', name: 'Ханз', icon: Languages, color: 'from-red-500 to-pink-500' },
+    { id: 'grammar', name: 'Дүрэм', icon: BookOpen, color: 'from-blue-500 to-cyan-500' },
+    { id: 'vocabulary', name: 'Үг', icon: Brain, color: 'from-green-500 to-emerald-500' },
+    { id: 'reading', name: 'Уншлага', icon: FileText, color: 'from-purple-500 to-indigo-500' }
+  ];
+
+  const getCategoryItems = (categoryId) => {
+    return learnedItems.filter(item => item.category === categoryId);
+  };
+
+  const getItemsDueForReview = () => {
+    return learnedItems.filter(item => new Date(item.nextReview) <= new Date());
+  };
+
+  const getStats = () => {
+    const total = learnedItems.length;
+    const dueForReview = getItemsDueForReview().length;
+    const avgMastery = total > 0 
+      ? Math.round(learnedItems.reduce((sum, item) => sum + item.mastery, 0) / total)
+      : 0;
+    
+    const thisWeek = learnedItems.filter(item => {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      return new Date(item.dateAdded) >= weekAgo;
+    }).length;
+
+    return { total, dueForReview, avgMastery, thisWeek };
+  };
+
+  const filteredItems = learnedItems.filter(item => {
+    const matchesSearch = 
+      item.character.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.reading.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.meaning.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesFilter = 
+      filterLevel === 'all' ||
+      (filterLevel === 'review' && new Date(item.nextReview) <= new Date()) ||
+      (filterLevel === 'mastered' && item.mastery >= 80) ||
+      (filterLevel === 'learning' && item.mastery < 80);
+
+    const matchesCategory = activeTab === 'dashboard' || item.category === activeTab;
+
+    return matchesSearch && matchesFilter && matchesCategory;
+  });
+
+  const stats = getStats();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce">🎌</div>
+          <div className="text-white text-xl animate-pulse">Ачааллаж байна...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Auth Modal
+  if (showAuthModal) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-red-900/30 max-w-md w-full shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-red-600 to-pink-600 p-8 text-center">
+            <div className="text-5xl mb-3">🎌</div>
+            <h1 className="text-3xl font-bold mb-2">日本語 N3</h1>
+            <p className="text-red-100">Сурах Систем</p>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex border-b border-red-900/30">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => setAuthMode('login')}
+              className={`flex-1 py-4 font-medium transition-all ${
+                authMode === 'login'
+                  ? 'bg-slate-800 text-white border-b-2 border-red-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              Нэвтрэх
+            </button>
+            <button
+              onClick={() => setAuthMode('register')}
+              className={`flex-1 py-4 font-medium transition-all ${
+                authMode === 'register'
+                  ? 'bg-slate-800 text-white border-b-2 border-red-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Бүртгүүлэх
             </button>
           </div>
 
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-800 animate-fadeIn">
-              <div className="flex flex-col gap-3">
-                {['Home', 'Discover', 'About', 'Contact'].map((item) => (
-                  <a 
-                    key={item}
-                    href="#" 
-                    className="px-4 py-2 text-sm font-semibold text-[#1E293B] dark:text-[#E2E8F0] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  >
-                    {item}
-                  </a>
-                ))}
-                <button className="mt-2 px-4 py-2.5 bg-[#104882] text-white rounded-full font-bold text-sm">
-                  Subscribe
-                </button>
+          {/* Form */}
+          <div className="p-8 space-y-6">
+            {authMode === 'register' && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Нэр</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    value={authForm.name}
+                    onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-red-500/50 text-white"
+                    placeholder="Таны нэр"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-300">И-мэйл</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="email"
+                  value={authForm.email}
+                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                  className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-red-500/50 text-white"
+                  placeholder="example@gmail.com"
+                />
               </div>
             </div>
-          )}
-        </div>
-      </nav>
 
-      {/* Hero Section */}
-      <header 
-        ref={heroRef}
-        className="relative mt-20 h-[600px] overflow-hidden"
-      >
-        {/* Background with Parallax Effect */}
-        <div className="absolute inset-0">
-          <div 
-            className="absolute inset-0 bg-cover bg-center transform scale-110 transition-transform duration-[10000ms]"
-            style={{
-              backgroundImage: 'url(https://lh3.googleusercontent.com/aida-public/AB6AXuD9lm4MWGAvQkOMe8DRJxwXAfxgFZ8b9KUji3jWhIhEcXoZa-b2b7aZ4aEZJeBlkUewL6ng3PdtTos1kht-xJACzHYMaKM3nC_iWdjtZYj-ZGZ76g_T5JXqEsIh1XVWVs1PnzG9C6pXf-VgskKrDwJTX_rw7edCgo-zRm9GqkEOF_y7KYqoB-ggX_F3FpOVjiTH6OL40GQgUrpK0eZz4LEonB09cQKv_8oousSzeqN1MCBdMKUTUCIPb1uk958HkLwgTxyzchRAq1OY)'
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#104882]/95 via-[#104882]/80 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(244,180,0,0.1),transparent_50%)]" />
-        </div>
-
-        {/* Content */}
-        <div className="relative h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <div className="max-w-3xl space-y-6 animate-fadeInUp">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F4B400]/20 backdrop-blur-sm rounded-full border border-[#F4B400]/30 text-[#F4B400] text-sm font-bold">
-                <TrendingUp size={16} />
-                <span>Trending Stories from Mongolia</span>
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Нууц үг</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="password"
+                  value={authForm.password}
+                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                  className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-red-500/50 text-white"
+                  placeholder="••••••••"
+                />
               </div>
-              
-              <h1 className="text-5xl md:text-7xl font-black text-white leading-tight tracking-tight">
-                Discover the Spirit
-                <br />
-                of <span className="text-[#F4B400] relative">
-                  Mongolia
-                  <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 300 8" fill="none">
-                    <path d="M0 4C50 8, 250 0, 300 4" stroke="#F4B400" strokeWidth="4" />
-                  </svg>
-                </span>
-              </h1>
-              
-              <p className="text-xl text-blue-100 font-medium max-w-2xl">
-                Explore culture, landscapes, and stories from the heart of the steppes. Curated visual stories delivered daily.
+            </div>
+
+            {authMode === 'register' && (
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Нууц үг баталгаажуулах</label>
+                <div className="relative">
+                  <Shield className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="password"
+                    value={authForm.confirmPassword}
+                    onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-red-500/50 text-white"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={authMode === 'login' ? handleLogin : handleRegister}
+              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 py-3 rounded-lg font-bold transition-all duration-300 shadow-lg"
+            >
+              {authMode === 'login' ? 'Нэвтрэх' : 'Бүртгүүлэх'}
+            </button>
+
+            {authMode === 'login' && (
+              <p className="text-center text-sm text-gray-400">
+                Шинэ хэрэглэгч үү?{' '}
+                <button
+                  onClick={() => setAuthMode('register')}
+                  className="text-red-400 hover:text-red-300 font-medium"
+                >
+                  Бүртгүүлэх
+                </button>
               </p>
-              
-              <div className="flex flex-wrap gap-4 pt-4">
-                <a 
-                  href="#feed" 
-                  className="group inline-flex items-center gap-2 px-8 py-4 bg-[#F4B400] text-[#104882] rounded-full font-bold text-base hover:bg-[#ffc107] transition-all duration-300 hover:scale-105 shadow-xl shadow-[#F4B400]/30"
-                >
-                  Start Exploring
-                  <ChevronRight className="group-hover:translate-x-1 transition-transform" size={20} />
-                </a>
-                <a 
-                  href="#" 
-                  className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white rounded-full font-bold text-base hover:bg-white hover:text-[#104882] transition-all duration-300"
-                >
-                  Learn More
-                </a>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Payment Modal
+  if (showPaymentModal) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-red-900/30 max-w-lg w-full shadow-2xl">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <div className="text-6xl mb-4">💳</div>
+              <h2 className="text-3xl font-bold mb-2">Төлбөр төлөх</h2>
+              <p className="text-gray-400">Бүх онцлогуудыг ашиглахын тулд төлбөр төлнө үү</p>
+            </div>
+
+            <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-2 border-yellow-600/30 rounded-xl p-6 mb-6">
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2">50,000₮</div>
+                <div className="text-gray-300">Насан турш хэрэглэх эрх</div>
               </div>
+              <div className="mt-4 space-y-2 text-sm text-gray-300">
+                <div className="flex items-center gap-2">
+                  <Check size={16} className="text-green-400" />
+                  <span>Хязгааргүй ханз, үг нэмэх</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check size={16} className="text-green-400" />
+                  <span>Автомат давталтын систем</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check size={16} className="text-green-400" />
+                  <span>Ахиц явцын хяналт</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check size={16} className="text-green-400" />
+                  <span>Кирилл транслит</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handlePayment('social')}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center gap-3"
+              >
+                <CreditCard size={24} />
+                Social Pay-ээр төлөх
+              </button>
+
+              <button
+                onClick={() => handlePayment('qpay')}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center gap-3"
+              >
+                <CreditCard size={24} />
+                QPay-ээр төлөх
+              </button>
+
+              <button
+                onClick={() => handlePayment('monpay')}
+                className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg flex items-center justify-center gap-3"
+              >
+                <CreditCard size={24} />
+                Монпэй-ээр төлөх
+              </button>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="w-full mt-6 text-gray-400 hover:text-white py-2 transition-colors text-sm"
+            >
+              Буцах
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-red-950 to-slate-900 text-white font-sans">
+      {/* Header */}
+      <header className="border-b border-red-900/30 backdrop-blur-sm bg-black/20 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="text-3xl font-bold bg-gradient-to-r from-red-400 via-pink-400 to-red-300 bg-clip-text text-transparent">
+                  日本語 N3
+                </div>
+                <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-pink-500 rounded-full opacity-60"></div>
+              </div>
+              <div className="hidden md:flex items-center gap-3 text-sm text-gray-400 border-l border-red-900/40 pl-4">
+                <User size={16} />
+                <span>{user?.name}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 px-6 py-2.5 rounded-lg font-medium transition-all duration-300 shadow-lg shadow-red-900/50 hover:shadow-red-800/60 flex items-center gap-2"
+              >
+                <Plus size={20} />
+                <span className="hidden sm:inline">Нэмэх</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="text-gray-400 hover:text-white p-2 transition-colors"
+                title="Гарах"
+              >
+                <LogOut size={20} />
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F8FAFC] dark:from-[#0B1120] to-transparent" />
       </header>
 
-      {/* Filter Bar */}
-      <div className="sticky top-20 z-40 bg-white/80 dark:bg-[#1E293B]/80 backdrop-blur-xl border-y border-gray-200 dark:border-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-            {filters.map((filter) => (
+      {/* Navigation */}
+      <nav className="border-b border-red-900/30 bg-black/10 backdrop-blur-sm sticky top-[73px] z-40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-6 py-3 font-medium transition-all duration-300 border-b-2 whitespace-nowrap ${
+                activeTab === 'dashboard'
+                  ? 'border-red-500 text-red-400'
+                  : 'border-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              Хяналтын самбар
+            </button>
+            {categories.map(cat => (
               <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300 ${
-                  activeFilter === filter
-                    ? 'bg-[#104882] text-white shadow-lg shadow-[#104882]/30 scale-105'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                key={cat.id}
+                onClick={() => setActiveTab(cat.id)}
+                className={`px-6 py-3 font-medium transition-all duration-300 border-b-2 flex items-center gap-2 whitespace-nowrap ${
+                  activeTab === cat.id
+                    ? 'border-red-500 text-red-400'
+                    : 'border-transparent text-gray-400 hover:text-white'
                 }`}
               >
-                {filter}
+                <cat.icon size={18} />
+                {cat.name}
               </button>
             ))}
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Main Feed */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="feed">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post, index) => (
-            <article
-              key={post.id}
-              className="group bg-white dark:bg-[#1E293B] rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-gray-800 animate-fadeInUp"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Image Container */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                
-                {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                
-                {/* Top Right Icons */}
-                <div className="absolute top-3 right-3 flex gap-2">
-                  {post.trending && (
-                    <div className="px-2.5 py-1 bg-[#F4B400] text-[#104882] text-xs font-bold rounded-full flex items-center gap-1">
-                      <TrendingUp size={12} />
-                      Trending
-                    </div>
-                  )}
-                  <button
-                    onClick={() => toggleSave(post.id)}
-                    className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 ${
-                      savedPosts.includes(post.id)
-                        ? 'bg-[#F4B400] text-[#104882]'
-                        : 'bg-white/90 dark:bg-black/60 text-gray-600 dark:text-gray-300 hover:bg-[#F4B400] hover:text-[#104882]'
-                    }`}
-                  >
-                    <Bookmark size={16} fill={savedPosts.includes(post.id) ? 'currentColor' : 'none'} />
-                  </button>
-                </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {activeTab === 'dashboard' ? (
+          <DashboardView stats={stats} categories={categories} learnedItems={learnedItems} getCategoryItems={getCategoryItems} reviewItem={reviewItem} />
+        ) : (
+          <CategoryView 
+            category={categories.find(c => c.id === activeTab)}
+            items={filteredItems}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filterLevel={filterLevel}
+            setFilterLevel={setFilterLevel}
+            deleteItem={deleteItem}
+            reviewItem={reviewItem}
+          />
+        )}
+      </main>
 
-                {/* Action Buttons on Hover */}
-                <div className="absolute bottom-3 left-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                  <button className="flex-1 py-2 bg-white/90 backdrop-blur-sm text-[#104882] rounded-lg font-semibold text-sm hover:bg-white transition-colors">
-                    Read More
-                  </button>
-                  <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg hover:bg-white transition-colors">
-                    <Share2 size={18} className="text-[#104882]" />
-                  </button>
+      {/* Add Item Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-red-900/30 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-red-900/30 flex items-center justify-between sticky top-0 bg-slate-900/95 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold">Шинэ зүйл нэмэх</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Category Selection */}
+              <div>
+                <label className="block text-sm font-medium mb-3">Ангилал</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {categories.map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setNewItem({ ...newItem, category: cat.id })}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                        newItem.category === cat.id
+                          ? `bg-gradient-to-br ${cat.color} border-transparent shadow-lg`
+                          : 'border-red-900/30 hover:border-red-700/50 bg-slate-800/50'
+                      }`}
+                    >
+                      <cat.icon size={24} className="mx-auto mb-2" />
+                      <div className="text-sm font-medium">{cat.name}</div>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="p-6 space-y-3">
-                {/* Meta */}
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="px-2 py-1 bg-[#F4B400]/10 text-[#F4B400] font-bold uppercase tracking-wider rounded">
-                    {post.category}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-500 dark:text-gray-400">{post.time}</span>
+              {/* Form Fields */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    {newItem.category === 'kanji' ? 'Ханз' : 
+                     newItem.category === 'grammar' ? 'Дүрмийн бүтэц' :
+                     newItem.category === 'vocabulary' ? 'Үг' : 'Текст'} *
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.character}
+                    onChange={(e) => setNewItem({ ...newItem, character: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500/50 text-2xl"
+                    placeholder={newItem.category === 'kanji' ? '漢' : newItem.category === 'grammar' ? '～について' : '単語'}
+                  />
                 </div>
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-[#1E293B] dark:text-[#E2E8F0] leading-tight group-hover:text-[#104882] dark:group-hover:text-[#F4B400] transition-colors line-clamp-2">
-                  {post.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
-                  {post.description}
-                </p>
-
-                {/* Author */}
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={post.avatar}
-                      alt={post.author}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-[#104882]/20"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Кирилл уншлага
+                      <span className="text-xs text-gray-400 ml-2">(автоматаар латинаар хувирна)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newItem.readingCyrillic}
+                      onChange={(e) => setNewItem({ ...newItem, readingCyrillic: e.target.value })}
+                      className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500/50"
+                      placeholder="кан (кирилл)"
                     />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-[#1E293B] dark:text-[#E2E8F0]">
-                        {post.author}
-                      </p>
-                      <p className="text-xs text-gray-500">Content Creator</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Латин уншлага
+                      <span className="text-xs text-green-400 ml-2">(автомат)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newItem.reading}
+                      onChange={(e) => setNewItem({ ...newItem, reading: e.target.value })}
+                      className="w-full bg-green-900/20 border border-green-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500/50"
+                      placeholder="kan (авто)"
+                      readOnly
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Утга / Тайлбар *</label>
+                  <input
+                    type="text"
+                    value={newItem.meaning}
+                    onChange={(e) => setNewItem({ ...newItem, meaning: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500/50"
+                    placeholder="Хятад, Хан гүрэн"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Жишээ өгүүлбэр</label>
+                  <textarea
+                    value={newItem.example}
+                    onChange={(e) => setNewItem({ ...newItem, example: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500/50 min-h-[80px]"
+                    placeholder="漢字を勉強します。"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Тэмдэглэл</label>
+                  <textarea
+                    value={newItem.notes}
+                    onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
+                    className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-3 focus:outline-none focus:border-red-500/50 min-h-[60px]"
+                    placeholder="Нэмэлт мэдээлэл..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Цуцлах
+                </button>
+                <button
+                  onClick={addLearnedItem}
+                  disabled={!newItem.character || !newItem.meaning}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg"
+                >
+                  Нэмэх
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Dashboard and CategoryView components remain the same as before
+function DashboardView({ stats, categories, learnedItems, getCategoryItems, reviewItem }) {
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [currentReviewItem, setCurrentReviewItem] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  const itemsDueForReview = learnedItems.filter(item => new Date(item.nextReview) <= new Date());
+
+  const startReview = () => {
+    if (itemsDueForReview.length > 0) {
+      setCurrentReviewItem(itemsDueForReview[0]);
+      setShowAnswer(false);
+      setShowReviewModal(true);
+    }
+  };
+
+  const handleReview = (correct) => {
+    reviewItem(currentReviewItem.id, correct);
+    const remainingItems = itemsDueForReview.filter(item => item.id !== currentReviewItem.id);
+    
+    if (remainingItems.length > 0) {
+      setCurrentReviewItem(remainingItems[0]);
+      setShowAnswer(false);
+    } else {
+      setShowReviewModal(false);
+      setCurrentReviewItem(null);
+    }
+  };
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-red-900/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl">
+              <BookOpen size={24} />
+            </div>
+            <TrendingUp size={20} className="text-green-400" />
+          </div>
+          <div className="text-3xl font-bold mb-1">{stats.total}</div>
+          <div className="text-gray-400 text-sm">Нийт сурсан</div>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-red-900/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl">
+              <Calendar size={24} />
+            </div>
+          </div>
+          <div className="text-3xl font-bold mb-1">{stats.dueForReview}</div>
+          <div className="text-gray-400 text-sm">Давтах хэрэгтэй</div>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-red-900/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl">
+              <Star size={24} />
+            </div>
+          </div>
+          <div className="text-3xl font-bold mb-1">{stats.avgMastery}%</div>
+          <div className="text-gray-400 text-sm">Дундаж түвшин</div>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-red-900/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl">
+              <TrendingUp size={24} />
+            </div>
+          </div>
+          <div className="text-3xl font-bold mb-1">+{stats.thisWeek}</div>
+          <div className="text-gray-400 text-sm">Энэ долоо хоног</div>
+        </div>
+      </div>
+
+      {/* Review Section */}
+      {stats.dueForReview > 0 && (
+        <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-2 border-yellow-600/30 rounded-2xl p-8 shadow-xl">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h3 className="text-2xl font-bold mb-2 flex items-center gap-3">
+                <div className="p-2 bg-yellow-500/20 rounded-lg">
+                  <Calendar size={28} className="text-yellow-400" />
+                </div>
+                Давталт хийх цаг боллоо!
+              </h3>
+              <p className="text-gray-300">
+                Танд давтах хэрэгтэй <span className="text-yellow-400 font-bold">{stats.dueForReview}</span> зүйл байна.
+              </p>
+            </div>
+            <button
+              onClick={startReview}
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg shadow-yellow-900/50 hover:shadow-yellow-800/60 hover:-translate-y-1"
+            >
+              Эхлүүлэх
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Categories Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {categories.map(cat => {
+          const items = getCategoryItems(cat.id);
+          const avgMastery = items.length > 0 
+            ? Math.round(items.reduce((sum, item) => sum + item.mastery, 0) / items.length)
+            : 0;
+
+          return (
+            <div
+              key={cat.id}
+              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 border border-red-900/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className={`p-4 bg-gradient-to-br ${cat.color} rounded-xl group-hover:scale-110 transition-transform duration-300`}>
+                    <cat.icon size={28} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">{cat.name}</h3>
+                    <p className="text-gray-400 text-sm">{items.length} зүйл</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-gray-400">Ахиц</span>
+                  <span className="font-bold">{avgMastery}%</span>
+                </div>
+                <div className="h-3 bg-slate-700/50 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full bg-gradient-to-r ${cat.color} transition-all duration-1000 rounded-full`}
+                    style={{ width: `${avgMastery}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Review Modal */}
+      {showReviewModal && currentReviewItem && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl border border-red-900/30 max-w-2xl w-full shadow-2xl">
+            <div className="p-6 border-b border-red-900/30">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Давталт ({itemsDueForReview.length} үлдсэн)</h2>
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-8 text-center">
+              <div className="mb-6">
+                <div className="text-6xl font-bold mb-4">{currentReviewItem.character}</div>
+                {currentReviewItem.reading && (
+                  <div className="text-2xl text-gray-400 mb-2">{currentReviewItem.reading}</div>
+                )}
+              </div>
+
+              {showAnswer ? (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="bg-slate-800/50 rounded-xl p-4">
+                    <div className="text-sm text-gray-400 mb-1">Утга:</div>
+                    <div className="text-xl font-medium">{currentReviewItem.meaning}</div>
+                  </div>
+
+                  {currentReviewItem.example && (
+                    <div className="bg-slate-800/50 rounded-xl p-4">
+                      <div className="text-sm text-gray-400 mb-1">Жишээ:</div>
+                      <div className="text-lg">{currentReviewItem.example}</div>
                     </div>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                      <Heart size={18} className="text-gray-400 hover:text-red-500" />
+                  )}
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={() => handleReview(false)}
+                      className="flex-1 bg-red-600 hover:bg-red-500 px-6 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <X size={20} />
+                      Буруу
+                    </button>
+                    <button
+                      onClick={() => handleReview(true)}
+                      className="flex-1 bg-green-600 hover:bg-green-500 px-6 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <Check size={20} />
+                      Зөв
                     </button>
                   </div>
                 </div>
+              ) : (
+                <button
+                  onClick={() => setShowAnswer(true)}
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg flex items-center gap-2 mx-auto"
+                >
+                  <Eye size={20} />
+                  Хариулт харах
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CategoryView({ category, items, searchQuery, setSearchQuery, filterLevel, setFilterLevel, deleteItem, reviewItem }) {
+  const [expandedId, setExpandedId] = useState(null);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className={`p-4 bg-gradient-to-br ${category.color} rounded-xl`}>
+            <category.icon size={32} />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold">{category.name}</h2>
+            <p className="text-gray-400">{items.length} зүйл</p>
+          </div>
+        </div>
+
+        <div className="flex gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Хайх..."
+              className="w-full bg-slate-800/50 border border-red-900/30 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-red-500/50"
+            />
+          </div>
+
+          <select
+            value={filterLevel}
+            onChange={(e) => setFilterLevel(e.target.value)}
+            className="bg-slate-800/50 border border-red-900/30 rounded-lg px-4 py-2.5 focus:outline-none focus:border-red-500/50"
+          >
+            <option value="all">Бүгд</option>
+            <option value="review">Давтах</option>
+            <option value="mastered">Эзэмшсэн</option>
+            <option value="learning">Сурч байгаа</option>
+          </select>
+        </div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="text-center py-20">
+          <div className={`inline-flex p-6 bg-gradient-to-br ${category.color} rounded-2xl mb-4`}>
+            <category.icon size={48} />
+          </div>
+          <h3 className="text-xl font-bold mb-2">Одоогоор хоосон байна</h3>
+          <p className="text-gray-400">Дээд талын "Нэмэх" товчоор шинэ зүйл нэмээрэй</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map(item => (
+            <div
+              key={item.id}
+              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-red-900/30 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+              onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="text-3xl font-bold mb-2">{item.character}</div>
+                  {item.reading && (
+                    <div className="text-lg text-gray-400 mb-1">{item.reading}</div>
+                  )}
+                  {item.readingCyrillic && (
+                    <div className="text-sm text-green-400/70 mb-1">({item.readingCyrillic})</div>
+                  )}
+                  <div className="text-sm text-gray-300">{item.meaning}</div>
+                </div>
+                
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm('Устгах уу?')) deleteItem(item.id);
+                  }}
+                  className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                >
+                  <X size={20} />
+                </button>
               </div>
-            </article>
+
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-gray-500">Эзэмшилт</span>
+                  <span className={`font-bold ${
+                    item.mastery >= 80 ? 'text-green-400' :
+                    item.mastery >= 50 ? 'text-yellow-400' : 'text-red-400'
+                  }`}>
+                    {item.mastery}%
+                  </span>
+                </div>
+                <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 rounded-full ${
+                      item.mastery >= 80 ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
+                      item.mastery >= 50 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+                      'bg-gradient-to-r from-red-500 to-pink-500'
+                    }`}
+                    style={{ width: `${item.mastery}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              {expandedId === item.id && (
+                <div className="space-y-3 animate-fade-in border-t border-red-900/30 pt-4">
+                  {item.example && (
+                    <div className="bg-slate-700/30 rounded-lg p-3">
+                      <div className="text-xs text-gray-400 mb-1">Жишээ:</div>
+                      <div className="text-sm">{item.example}</div>
+                    </div>
+                  )}
+                  
+                  {item.notes && (
+                    <div className="bg-slate-700/30 rounded-lg p-3">
+                      <div className="text-xs text-gray-400 mb-1">Тэмдэглэл:</div>
+                      <div className="text-sm">{item.notes}</div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+                    <span>Давтсан: {item.reviewCount} удаа</span>
+                    <span>
+                      {new Date(item.nextReview) <= new Date() 
+                        ? '⚡ Одоо давтах' 
+                        : `📅 ${new Date(item.nextReview).toLocaleDateString('mn-MN')}`
+                      }
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
-
-        {/* Load More */}
-        <div className="mt-16 text-center">
-          <button className="group px-8 py-4 bg-transparent border-2 border-[#104882] dark:border-[#F4B400] text-[#104882] dark:text-[#F4B400] hover:bg-[#104882] hover:text-white dark:hover:bg-[#F4B400] dark:hover:text-[#104882] font-bold rounded-full transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center gap-2">
-            Load More Stories
-            <ChevronRight className="group-hover:translate-x-1 transition-transform" size={20} />
-          </button>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-[#104882] text-white pt-16 pb-8 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-            {/* Brand */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border-2 border-[#F4B400]">
-                  <span className="text-[#F4B400] font-black text-xs transform -rotate-90">HEY</span>
-                </div>
-                <div className="font-black text-xl">
-                  <span className="text-[#F4B400]">HEY!</span> MONGOL
-                </div>
-              </div>
-              <p className="text-blue-200 text-sm leading-relaxed">
-                Connecting the world to the beauty, history, and vibrant culture of Mongolia. Your window to the steppes.
-              </p>
-              <div className="flex gap-3 pt-2">
-                {['facebook', 'instagram', 'twitter', 'youtube'].map((social) => (
-                  <a
-                    key={social}
-                    href="#"
-                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#F4B400] flex items-center justify-center transition-all duration-300 hover:scale-110"
-                  >
-                    <span className="text-white text-xs font-bold">{social[0].toUpperCase()}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-                Quick Links
-                <div className="flex-1 h-px bg-[#F4B400]/30" />
-              </h4>
-              <ul className="space-y-2.5">
-                {['About Us', 'Destinations', 'Culture Guide', 'Travel Tips', 'Contact'].map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-blue-100 hover:text-[#F4B400] transition-colors text-sm inline-flex items-center gap-2 group">
-                      <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Newsletter */}
-            <div>
-              <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-                Newsletter
-                <div className="flex-1 h-px bg-[#F4B400]/30" />
-              </h4>
-              <p className="text-blue-200 text-sm mb-4">
-                Subscribe for weekly updates from the land of blue sky.
-              </p>
-              <form className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="w-full px-4 py-3 bg-[#0a3566] border border-[#F4B400]/20 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-[#F4B400] transition-all"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-[#F4B400] text-[#104882] font-bold rounded-lg hover:bg-[#ffc107] transition-all duration-300 hover:scale-105"
-                >
-                  Subscribe
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {/* Copyright */}
-          <div className="pt-8 border-t border-blue-800">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-blue-300">
-              <p>© 2026 Hey! Mongol. All rights reserved.</p>
-              <div className="flex gap-6">
-                <a href="#" className="hover:text-[#F4B400] transition-colors">Privacy Policy</a>
-                <a href="#" className="hover:text-[#F4B400] transition-colors">Terms of Service</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease;
-        }
-        
-        .animate-fadeInUp {
-          animation: fadeInUp 0.6s ease both;
-        }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
+      )}
     </div>
   );
 }
