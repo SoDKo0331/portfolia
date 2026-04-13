@@ -4,13 +4,10 @@
   "description": "",
   "type": "module",
   "main": "index.js",
-  "homepage": "https://SoDKo0331.github.io/portfolia/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -37,7 +34,6 @@
     "@tailwindcss/postcss7-compat": "^2.2.17",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
-    "gh-pages": "^6.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1",
     "vite": "^7.2.6"
