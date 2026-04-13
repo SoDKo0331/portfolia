@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Mail, Phone, MapPin, Briefcase, GraduationCap, 
   Code, Activity, Award, User, ChevronDown, MonitorPlay,
-  Brain, FileText, Database, ShieldCheck
+  Brain, FileText, Database, ShieldCheck, Calendar
 } from 'lucide-react';
 
 const Portfolio = () => {
