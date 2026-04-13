@@ -1,294 +1,338 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { 
-  Mail, Phone, MapPin, Briefcase, GraduationCap, 
-  Code, Activity, Award, User, ChevronDown, MonitorPlay,
-  Brain, FileText, Database, ShieldCheck, Calendar
+  ArrowRight,
+  Briefcase,
+  GraduationCap,
+  MapPin,
+  Mail,
+  Phone,
+  Code2,
+  Trophy,
+  UserCircle2
 } from 'lucide-react';
 
-const Portfolio = () => {
-  const [isVisible, setIsVisible] = useState(false);
+export default function Portfolio() {
+  const { scrollYProgress } = useScroll();
+  const yHero = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  // Framer motion variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] } }
+  };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
-      {/* Background ambient effects */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-600/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]"></div>
-      </div>
-
-      <div className="relative z-10">
-        {/* Navigation / Header */}
-        <nav className="fixed top-0 w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-50">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div className="text-xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-              N/S
-            </div>
-            <div className="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
-              <a href="#about" className="hover:text-cyan-400 transition-colors">About</a>
-              <a href="#experience" className="hover:text-cyan-400 transition-colors">Experience</a>
-              <a href="#skills" className="hover:text-cyan-400 transition-colors">Skills</a>
-              <a href="#education" className="hover:text-cyan-400 transition-colors">Education</a>
-            </div>
-          </div>
-        </nav>
-
-        {/* Hero Section */}
-        <section className="min-h-screen flex items-center justify-center pt-20 px-6">
-          <div className={`max-w-4xl mx-auto text-center transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <h2 className="text-cyan-400 font-mono text-lg mb-4 tracking-wider">Hello, my name is</h2>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
-              Norovnyam Sodbayar.
-            </h1>
-            <h3 className="text-3xl md:text-5xl font-bold text-slate-400 mb-8">
-              Information Technology Engineer.
-            </h3>
-            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-12">
-              "Just looking for a job, but I keep learning in every second. So if you hire me, I will show you who I am. hha"
-            </p>
-            
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-              <a href="#contact" className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                Hire Me
-              </a>
-              <div className="flex items-center gap-6 text-slate-400">
-                <a href="mailto:ssodko243@gmail.com" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
-                  <Mail size={20} />
-                  <span>ssodko243@gmail.com</span>
-                </a>
-                <span className="hidden md:inline">|</span>
-                <span className="flex items-center gap-2">
-                  <Phone size={20} />
-                  <span>94918249 , 99584543</span>
-                </span>
-              </div>
-            </div>
-
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-slate-500">
-              <ChevronDown size={32} />
-            </div>
-          </div>
-        </section>
-
-        {/* About & Basic Info Section */}
-        <section id="about" className="py-24 px-6 bg-slate-900/50">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-4 mb-12">
-              <div className="h-[1px] w-12 bg-cyan-500"></div>
-              <h2 className="text-3xl font-bold text-white"><span className="text-cyan-400 mr-2">01.</span>Basic Info</h2>
-              <div className="h-[1px] flex-1 bg-slate-800"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <InfoCard icon={<User />} label="Birthdate" value="2004-03-31" subvalue="(Male)" />
-              <InfoCard icon={<MapPin />} label="Location" value="Chingeltei District" subvalue="Ulaanbaatar, MN" />
-              <InfoCard icon={<Briefcase />} label="Salary Expectation" value="1.8M - 2.1M MNT" subvalue="Target: IT Engineer" />
-              <InfoCard icon={<ShieldCheck />} label="Details" value="Reg: ПЮ04233115" subvalue="Driver's License: M" />
-            </div>
-          </div>
-        </section>
-
-        {/* Experience Section */}
-        <section id="experience" className="py-24 px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-center gap-4 mb-16">
-              <div className="h-[1px] flex-1 bg-slate-800"></div>
-              <h2 className="text-3xl font-bold text-white"><span className="text-cyan-400 mr-2">02.</span>Experience</h2>
-              <div className="h-[1px] w-12 bg-cyan-500"></div>
-            </div>
-
-            <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
-              
-              {/* Omni Capital */}
-              <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-cyan-500 text-slate-900 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                  <MonitorPlay size={18} />
-                </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-800/40 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50 hover:bg-slate-800/60 transition-colors shadow-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-xl text-white">Mobile Engineer</h3>
-                    <span className="text-cyan-400 text-sm font-mono">Present</span>
-                  </div>
-                  <div className="text-slate-400 text-sm font-medium mb-4">Omni Capital NBFI LLC • 2025-08-03</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Working as a primary mobile application developer. Responsible for building, maintaining, and deploying highly responsive mobile applications.
-                  </p>
-                </div>
-              </div>
-
-              {/* Tee Education */}
-              <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-purple-500 text-slate-100 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
-                  <GraduationCap size={18} />
-                </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-800/40 backdrop-blur-sm p-6 rounded-xl border border-slate-700/50 hover:bg-slate-800/60 transition-colors shadow-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-xl text-white">Teacher</h3>
-                    <span className="text-purple-400 text-sm font-mono">Present</span>
-                  </div>
-                  <div className="text-slate-400 text-sm font-medium mb-4">Tee Education • 2025-07-03</div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Teaching basic coding skills to students. Demonstrated strong leadership by managing and coordinating a team of 5 people effectively.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
-
-        {/* Skills Section */}
-        <section id="skills" className="py-24 px-6 bg-slate-900/50">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-4 mb-16">
-              <div className="h-[1px] w-12 bg-cyan-500"></div>
-              <h2 className="text-3xl font-bold text-white"><span className="text-cyan-400 mr-2">03.</span>Skills Spectrum</h2>
-              <div className="h-[1px] flex-1 bg-slate-800"></div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              {/* Technical Skills */}
-              <div className="bg-slate-800/30 rounded-2xl p-8 border border-slate-700/50">
-                <h3 className="flex items-center gap-3 text-2xl font-bold text-white mb-8">
-                  <Code className="text-cyan-400" /> Technical Arsenal
-                </h3>
-                <div className="space-y-6">
-                  <SkillBar name="HTML / CSS" level={60} />
-                  <SkillBar name="Figma" level={60} />
-                  <SkillBar name="JavaScript" level={50} />
-                  <SkillBar name="Python" level={50} />
-                  <SkillBar name="React & React Native" level={50} />
-                  <SkillBar name="SQL" level={50} />
-                  <SkillBar name="Unity Development" level={50} />
-                  <SkillBar name="GitLab" level={50} />
-                  <SkillBar name="Node.js" level={40} />
-                </div>
-              </div>
-
-              {/* Other Skills */}
-              <div className="space-y-8">
-                {/* Languages */}
-                <div className="bg-slate-800/30 rounded-2xl p-8 border border-slate-700/50">
-                  <h3 className="flex items-center gap-3 text-2xl font-bold text-white mb-6">
-                    <FileText className="text-purple-400" /> Languages
-                  </h3>
-                  <div className="flex flex-wrap gap-4">
-                    <Badge color="cyan" label="English" sub="Intermediate" />
-                    <Badge color="purple" label="Japanese" sub="Upper-Intermediate" />
-                    <Badge color="blue" label="Mongolian" sub="Native" />
-                  </div>
-                </div>
-
-                {/* Soft Skills */}
-                <div className="bg-slate-800/30 rounded-2xl p-8 border border-slate-700/50">
-                  <h3 className="flex items-center gap-3 text-2xl font-bold text-white mb-6">
-                    <Brain className="text-green-400" /> Core Strengths
-                  </h3>
-                  <div className="flex flex-wrap gap-3">
-                    {['Team Communication', 'Adaptability', 'Innovation', 'Work Under Pressure', 'Presentation', 'Tutoring'].map(skill => (
-                      <span key={skill} className="px-4 py-2 bg-slate-700/50 text-slate-200 rounded-full text-sm border border-slate-600/50">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Sports & Professional Skills */}
-                <div className="bg-slate-800/30 rounded-2xl p-8 border border-slate-700/50">
-                  <h3 className="flex items-center gap-3 text-2xl font-bold text-white mb-6">
-                    <Activity className="text-rose-400" /> Sports & Pro Skills
-                  </h3>
-                  <ul className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm text-slate-300">
-                    <li className="flex items-start gap-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400"></div> Volleyball (Professional)</li>
-                    <li className="flex items-start gap-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400"></div> Basketball (Advanced)</li>
-                    <li className="flex items-start gap-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400"></div> Football/Soccer (Advanced)</li>
-                    <li className="flex items-start gap-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-400"></div> Table Tennis (Advanced)</li>
-                    <li className="flex items-start gap-2 col-span-2 mt-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-cyan-400"></div> Exercise Therapy & Physical Techniques</li>
-                    <li className="flex items-start gap-2 col-span-2"><div className="mt-1 w-1.5 h-1.5 rounded-full bg-cyan-400"></div> Sports Rules & Competition Regulations</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Education Section */}
-        <section id="education" className="py-24 px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-12"><span className="text-cyan-400 mr-2">04.</span>Education</h2>
-            
-            <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700 p-10 rounded-2xl shadow-2xl relative overflow-hidden group hover:border-cyan-500/50 transition-colors">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Award size={120} />
-              </div>
-              <div className="relative z-10">
-                <GraduationCap size={48} className="text-cyan-400 mx-auto mb-6" />
-                <h3 className="text-2xl font-bold text-white mb-2">National University of Mongolia</h3>
-                <p className="text-xl text-purple-400 font-medium mb-6">Bachelor of Software Engineering</p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-slate-300">
-                  <span className="flex items-center gap-2"><Calendar size={18} className="text-slate-500" /> 2022 - 2026</span>
-                  <span className="hidden sm:block text-slate-700">|</span>
-                  <span className="flex items-center gap-2"><Award size={18} className="text-yellow-500" /> 3.6 GPA</span>
-                  <span className="hidden sm:block text-slate-700">|</span>
-                  <span className="flex items-center gap-2"><MapPin size={18} className="text-slate-500" /> Mongolia</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-slate-800/50 bg-slate-950 py-8 px-6 text-center">
-          <p className="text-slate-500 font-mono text-sm group cursor-pointer">
-            Built from scratch by <span className="text-cyan-500 group-hover:text-cyan-400 transition-colors">Norovnyam Sodbayar</span>.
-          </p>
-        </footer>
-      </div>
-    </div>
-  );
-};
-
-// Sub-components
-const InfoCard = ({ icon, label, value, subvalue }) => (
-  <div className="bg-slate-800/30 backdrop-blur border border-slate-700/50 p-6 rounded-xl hover:-translate-y-1 hover:bg-slate-800/50 transition-all duration-300">
-    <div className="text-cyan-400 mb-4">{icon}</div>
-    <div className="text-sm text-slate-400 mb-1">{label}</div>
-    <div className="text-xl font-bold text-white mb-1">{value}</div>
-    <div className="text-sm font-mono text-slate-500">{subvalue}</div>
-  </div>
-);
-
-const SkillBar = ({ name, level }) => (
-  <div>
-    <div className="flex justify-between mb-2">
-      <span className="text-slate-300 font-medium text-sm">{name}</span>
-      <span className="text-cyan-400 font-mono text-sm">{level}%</span>
-    </div>
-    <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-      <div 
-        className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
-        style={{ width: `${level}%` }}
-      ></div>
-    </div>
-  </div>
-);
-
-const Badge = ({ label, sub, color }) => {
-  const colors = {
-    cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-    blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2 }
+    }
   };
 
   return (
-    <div className={`px-4 py-3 rounded-lg border flex flex-col gap-1 ${colors[color]}`}>
-      <span className="font-bold">{label}</span>
-      <span className="text-xs opacity-80">{sub}</span>
+    <div className="min-h-screen grain-bg">
+      {/* Editorial Navigation */}
+      <nav className="fixed top-0 w-full z-50 px-8 py-6 mix-blend-difference text-[var(--color-bg-base)]">
+        <div className="max-w-7xl mx-auto flex justify-between items-center text-sm font-medium tracking-widest uppercase">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+            N. Sodbayar
+          </motion.div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.2 }} className="flex space-x-12">
+            <a href="#about" className="hover:opacity-70 transition-opacity">Philosophy</a>
+            <a href="#work" className="hover:opacity-70 transition-opacity">Selected Work</a>
+            <a href="#craft" className="hover:opacity-70 transition-opacity">Craft</a>
+          </motion.div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative h-screen flex flex-col justify-center px-8 overflow-hidden pointer-events-none">
+        <motion.div 
+          style={{ y: yHero, opacity: opacityHero }}
+          className="max-w-7xl mx-auto w-full relative z-10"
+        >
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="text-[var(--color-text-muted)] tracking-[0.2em] text-sm uppercase mb-6 pl-2"
+          >
+            Digital Craft & Engineering
+          </motion.h2>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.1, ease: [0.25, 1, 0.5, 1] }}
+            className="text-6xl md:text-8xl lg:text-9xl font-semibold leading-[0.95] tracking-tight text-[var(--color-text-primary)] mb-8"
+          >
+            Articulating <br/>
+            <span className="italic font-light text-[var(--color-accent-bronze)]">Technology.</span>
+          </motion.h1>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+            className="max-w-xl pl-2 pointer-events-auto"
+          >
+            <p className="text-xl md:text-2xl text-[var(--color-text-muted)] leading-relaxed font-light">
+              Information Technology Engineer focusing on immersive digital objects and mobile experiences.
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Decorative Skeuomorphic Element */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 2, delay: 0.8, ease: "easeOut" }}
+          className="absolute right-[5%] top-[20%] w-[30vw] h-[50vh] sk-glass-metal -z-10 transform rotate-[-5deg]"
+        />
+      </section>
+
+      {/* Identity / Identity Block */}
+      <section id="about" className="py-32 px-8 relative z-20">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16"
+        >
+          {/* Identity Left Column */}
+          <motion.div variants={fadeIn} className="col-span-1 md:col-span-4">
+            <div className="sk-panel-elevated p-10 h-full flex flex-col justify-between">
+              <div>
+                <UserCircle2 size={32} className="text-[var(--color-accent-bronze)] mb-8" strokeWidth={1} />
+                <h3 className="text-2xl font-bold mb-2">Norovnyam Sodbayar</h3>
+                <p className="text-[var(--color-text-muted)] font-medium mb-12">Chingeltei District, Ulaanbaatar</p>
+                
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center border-b border-[var(--color-bg-inset)] pb-4">
+                    <span className="text-sm text-[var(--color-text-light)] uppercase tracking-wider">Birthdate</span>
+                    <span className="font-medium text-[var(--color-text-primary)]">2004-03-31</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-[var(--color-bg-inset)] pb-4">
+                    <span className="text-sm text-[var(--color-text-light)] uppercase tracking-wider">Education</span>
+                    <span className="font-medium text-[var(--color-text-primary)] text-right">National University<br/>of Mongolia</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Statement Right Column */}
+          <motion.div variants={fadeIn} className="col-span-1 md:col-span-8 flex flex-col justify-center">
+            <div className="sk-panel-inset p-12 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                <h1 className="text-9xl font-serif">"</h1>
+              </div>
+              <h3 className="text-[var(--color-text-light)] uppercase tracking-[0.2em] text-xs mb-8">Personal Philosophy</h3>
+              <p className="text-3xl md:text-4xl lg:text-5xl font-serif leading-tight text-[var(--color-text-primary)] relative z-10">
+                “Just looking for a job, but I keep learning in every second. So <span className="italic text-[var(--color-accent-bronze)]">if you hire me, I will show you who I am.</span>”
+              </p>
+              
+              <div className="mt-12 flex gap-6">
+                <a href="#contact" className="sk-button inline-flex items-center gap-3 px-8 py-4 text-sm font-bold uppercase tracking-widest text-[var(--color-accent-olive)]">
+                  Contact Me <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Selected Work (Experience presented as premium case studies) */}
+      <section id="work" className="py-32 px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-24 text-center"
+          >
+            <h2 className="text-5xl font-semibold mb-6">Selected Work</h2>
+            <p className="text-[var(--color-text-muted)] max-w-xl mx-auto">A curation of professional tenures and executed craft.</p>
+          </motion.div>
+
+          {/* Project 1: Omni Capital */}
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="group relative mb-32"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-7 relative z-10">
+                <div className="sk-object-extruded h-[500px] w-full p-4 overflow-hidden">
+                  <div className="w-full h-full bg-[#E8E6E1] rounded-lg shadow-inner flex flex-col justify-center items-center text-[var(--color-text-light)] transition-transform duration-700 group-hover:scale-105">
+                    <Briefcase size={64} strokeWidth={1} className="mb-6 opacity-30" />
+                    <span className="font-serif italic text-2xl opacity-60">Omni Capital NBFI</span>
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-5 relative z-20 lg:-ml-16 mt-8 lg:mt-0">
+                <div className="sk-glass-metal p-12">
+                  <div className="flex gap-3 mb-8">
+                    <span className="sk-panel-inset px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Mobile Engineering</span>
+                    <span className="sk-panel-inset px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">2025</span>
+                  </div>
+                  <h3 className="text-4xl font-semibold mb-4">Mobile Architect</h3>
+                  <p className="text-[var(--color-text-muted)] leading-loose mb-8">
+                    Primary mobile application developer. Tasked with the architecture, maintenance, and seamless deployment of high-performing, fluid enterprise mobile applications.
+                  </p>
+                  <button className="flex items-center gap-2 text-[var(--color-accent-burgundy)] font-medium uppercase tracking-wide text-sm hover:opacity-70 transition-opacity">
+                    Explore Details <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Project 2: Tee Education */}
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="group relative"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-row-reverse">
+              <div className="lg:col-span-5 relative z-20 lg:-mr-16 mt-8 lg:mt-0 order-2 lg:order-1">
+                <div className="sk-glass-metal p-12">
+                  <div className="flex gap-3 mb-8">
+                    <span className="sk-panel-inset px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Leadership</span>
+                    <span className="sk-panel-inset px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">2025</span>
+                  </div>
+                  <h3 className="text-4xl font-semibold mb-4">Software Educator</h3>
+                  <p className="text-[var(--color-text-muted)] leading-loose mb-8">
+                    Guided the next generation of engineers in fundamental coding practices while managing and coordinating a collaborative team of five individuals.
+                  </p>
+                  <button className="flex items-center gap-2 text-[var(--color-accent-burgundy)] font-medium uppercase tracking-wide text-sm hover:opacity-70 transition-opacity">
+                    Explore Details <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="lg:col-span-7 relative z-10 order-1 lg:order-2">
+                <div className="sk-object-extruded h-[500px] w-full p-4 overflow-hidden">
+                  <div className="w-full h-full bg-[#E1E3E8] rounded-lg shadow-inner flex flex-col justify-center items-center text-[var(--color-text-light)] transition-transform duration-700 group-hover:scale-105">
+                    <GraduationCap size={64} strokeWidth={1} className="mb-6 opacity-30" />
+                    <span className="font-serif italic text-2xl opacity-60">Tee Education</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Craft & Technical Acumen (Skills) */}
+      <section id="craft" className="py-32 px-8 bg-[#F0EFEA]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-16">
+            <div className="w-full md:w-1/3">
+              <h2 className="text-4xl font-semibold mb-6">The Craft</h2>
+              <p className="text-[var(--color-text-muted)] leading-loose mb-12">
+                A meticulous blend of frontend engineering, systems thought, and physical discipline. True performance stems from both digital algorithms and athletic endurance.
+              </p>
+              
+              <div className="sk-panel-inset p-8">
+                <h4 className="flex items-center gap-3 text-lg font-semibold mb-6">
+                  <Trophy size={20} className="text-[var(--color-accent-bronze)]" /> Physical Excellence
+                </h4>
+                <ul className="space-y-4">
+                  <li className="flex justify-between items-center border-b border-[var(--color-bg-base)] pb-2">
+                    <span className="text-[var(--color-text-muted)]">Volleyball</span>
+                    <span className="font-mono text-sm text-[var(--color-text-primary)]">Professional</span>
+                  </li>
+                  <li className="flex justify-between items-center border-b border-[var(--color-bg-base)] pb-2">
+                    <span className="text-[var(--color-text-muted)]">Basketball</span>
+                    <span className="font-mono text-sm text-[var(--color-text-primary)]">Advanced</span>
+                  </li>
+                  <li className="flex justify-between items-center pb-2">
+                    <span className="text-[var(--color-text-muted)]">Table Tennis</span>
+                    <span className="font-mono text-sm text-[var(--color-text-primary)]">Advanced</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="w-full md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {/* Tooling Specs */}
+               {[
+                { name: 'React Native', level: 60 },
+                { name: 'JavaScript / Node', level: 50 },
+                { name: 'Python', level: 50 },
+                { name: 'SQL', level: 50 },
+                { name: 'Unity', level: 50 },
+                { name: 'Figma UI/UX', level: 60 }
+              ].map((skill, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="sk-panel-elevated p-8 relative overflow-hidden"
+                >
+                  <Code2 size={24} strokeWidth={1} className="text-[var(--color-text-light)] mb-8" />
+                  <div className="flex justify-between items-end mb-4">
+                    <span className="text-xl font-medium">{skill.name}</span>
+                    <span className="font-mono text-sm text-[var(--color-text-muted)]">{skill.level}% Ratio</span>
+                  </div>
+                  {/* Tactile track and knob */}
+                  <div className="sk-track h-4 w-full relative flex items-center px-1">
+                    <div 
+                      className="absolute left-1 h-2 bg-gradient-to-r from-[var(--color-accent-bronze)] to-[var(--color-text-primary)] rounded-full opacity-60" 
+                      style={{ width: `calc(${skill.level}% - 8px)` }} 
+                    />
+                    <div 
+                      className="sk-knob h-6 w-6 z-10 transition-all duration-1000 ease-out absolute shadow-lg border border-white/50 cursor-pointer"
+                      style={{ left: `calc(${skill.level}% - 12px)` }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer / Contact Panels */}
+      <footer id="contact" className="py-24 px-8 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="sk-panel-elevated p-16 w-full"
+          >
+            <h2 className="text-5xl font-semibold mb-8">Initiate Dialogue</h2>
+            <p className="text-xl text-[var(--color-text-muted)] mb-12">
+              For engineering inquiries, design collaborations, or athletic challenges.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-8">
+              <a href="mailto:ssodko243@gmail.com" className="sk-button flex items-center gap-4 px-8 py-4 font-medium">
+                <Mail size={20} className="text-[var(--color-accent-olive)]" />
+                ssodko243@gmail.com
+              </a>
+              <a href="tel:94918249" className="sk-button flex items-center gap-4 px-8 py-4 font-medium">
+                <Phone size={20} className="text-[var(--color-accent-olive)]" />
+                +(976) 9491-8249
+              </a>
+            </div>
+          </motion.div>
+
+          <p className="mt-24 text-[var(--color-text-light)] text-sm tracking-widest uppercase">
+            Curated and Engineered by N. Sodbayar © 2026
+          </p>
+        </div>
+      </footer>
     </div>
   );
-};
-
-export default Portfolio;
+}
