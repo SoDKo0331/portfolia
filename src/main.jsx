@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import JapaneseN3App from "./components/FrenchColonialRights";
-import "./index.css"; // <- THIS IS CRUCIAL
+import Portfolio from "./components/Portfolio";
+import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <HeyMongolHomepage />
+    <Portfolio />
   </React.StrictMode>
 );
