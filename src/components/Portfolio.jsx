@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import {
   ArrowRight, Mail, Phone, MapPin, Briefcase,
@@ -6,37 +6,154 @@ import {
   Layers, Trophy, Zap, ChevronDown, ExternalLink
 } from 'lucide-react';
 
+const TRANSLATIONS = {
+  mn: {
+    nav: { about: 'Миний тухай', work: 'Ажлын туршлага', skills: 'Ур чадвар', contact: 'Холбоо барих' },
+    hero: {
+      status: 'Ажилд ороход бэлэн',
+      title: 'Мэдээлэл технологийн инженер',
+      location: 'Улаанбаатар, Монгол',
+      firstName: 'Норовням',
+      lastName: 'Содбаяр',
+      subtitle: 'Мобайл инженер. Програм хангамжийн багш. Тасралтгүй суралцагч.',
+      cta: 'Би секунд бүрт суралцсаар байна — намайг ажилд авбал би өөрийгөө харуулах болно.',
+      hireMe: './холбоо-барих',
+      terminal: {
+        title: 'Мобайл инженер',
+        gpa: '3.6 / 4.0 @ МУИС',
+        status: 'Боломжуудад нээлттэй ✅'
+      }
+    },
+    about: {
+      label: '// Өөрийн тухай',
+      quote: '"Зүгээр л ажил хайж байгаа ч, секунд бүрт суралцсаар байна.',
+      quoteHighlight: ' Хэрэв та намайг ажилд авбал би өөрийгөө хэн бэ гэдгийг харуулах болно."',
+      cards: {
+        edu: { label: 'Боловсрол', value: 'МУИС', sub: 'Програм хангамж — 3.6 GPA' },
+        loc: { label: 'Байршил', value: 'Чингэлтэй дүүрэг', sub: 'Улаанбаатар, Монгол' },
+        avail: { label: 'Бэлэн байдал', value: 'Ажилд ороход бэлэн', sub: '1.8сая – 2.1сая ₮ хүлээлттэй' },
+        lang: { label: 'Хэл', value: 'EN / JA / MN', sub: 'Дунд / Ахисан дунд / Төрөлх' }
+      }
+    },
+    work: {
+      title: 'Ажлын туршлага',
+      label: '// онцлох',
+      exp: [
+        {
+          role: 'Мобайл инженер',
+          company: 'Омни Капитал ББСБ ХХК',
+          period: '2025.08 – Одоо',
+          duration: '8 сар',
+          desc: 'Бизнесийн түвшний мобайл аппликейшнуудын архитектурыг боловсруулж, зах зээлд гаргасан. Төлөвлөлтөөс эхлээд хөгжүүлэлт, нэвтрүүлэлт хүртэлх бүхий л үе шатыг хариуцан ажилладаг.',
+          tags: ['React Native', 'Мобайл', 'UI/UX']
+        },
+        {
+          role: 'Програм хангамжийн багш',
+          company: 'Tee Education',
+          period: '2025.07 – Одоо',
+          duration: '9 сар',
+          desc: 'Сурагчдад код бичих анхан шатны мэдлэг олгосон. 5 багштай багийг удирдан чиглүүлж, сургалтын хөтөлбөрийн уялдаа холбоог ханган ажиллаж байна.',
+          tags: ['Манлайлал', 'Багшлах', 'Багийн ахлагч']
+        }
+      ]
+    },
+    skills: {
+      title: 'Ур чадвар',
+      label: '// технологийн сан',
+      tags: { mobile: 'мобайл', lang: 'хэл', web: 'вэб', backend: 'бэкэнд', db: 'өгөгдлийн сан', engine: 'энжин', design: 'дизайн', devops: 'девопс' },
+      also: 'Мөн дараах чиглэлээр сайн:',
+      extra: ['Волейбол (Мэргэжлийн)', 'Сагсан бөмбөг (Ахисан)', 'Англи хэл', 'Япон хэл (Ахисан дунд)', 'Ачаалал даах', 'Багийн манлайлал', 'Харилцааны ур чадвар']
+    },
+    contact: {
+      label: '// хамтдаа бүтээцгээе',
+      title: 'Боломжуудад',
+      titleHighlight: 'нээлттэй',
+      desc: 'Эхний өдрөөсөө хувь нэмрээ оруулахад бэлэн. Бид хамтдаа юу бүтээж чадахыг хамтдаа судалцгаая.',
+      footer: '© 2026 — Н. Содбаяр — сэтгэл гарган бүтээв'
+    }
+  },
+  en: {
+    nav: { about: 'About', work: 'Experience', skills: 'Skills', contact: 'Contact' },
+    hero: {
+      status: 'Available for hire',
+      title: 'IT Engineer',
+      location: 'Ulaanbaatar, Mongolia',
+      firstName: 'Norovnyam',
+      lastName: 'Sodbayar',
+      subtitle: 'Mobile Engineer. Software Educator. Perpetual Learner.',
+      cta: 'I keep learning every second — hire me and I\'ll show you who I am.',
+      hireMe: './hire-me',
+      terminal: {
+        title: 'Mobile Engineer',
+        gpa: '3.6 / 4.0 @ NUM',
+        status: 'Open to opportunities ✅'
+      }
+    },
+    about: {
+      label: '// personal statement',
+      quote: '"Just looking for a job, but I keep learning in every second.',
+      quoteHighlight: ' So if you hire me, I will show you who I am."',
+      cards: {
+        edu: { label: 'Education', value: 'NUM', sub: 'Software Eng. — 3.6 GPA' },
+        loc: { label: 'Location', value: 'Chingeltei District', sub: 'Ulaanbaatar, MN' },
+        avail: { label: 'Availability', value: 'Open to Hire', sub: '1.8M – 2.1M MNT' },
+        lang: { label: 'Languages', value: 'EN / JA / MN', sub: 'Int. / Upper-Int. / Native' }
+      }
+    },
+    work: {
+      title: 'Experience',
+      label: '// selected',
+      exp: [
+        {
+          role: 'Mobile Engineer',
+          company: 'Omni Capital NBFI LLC',
+          period: 'Aug 2025 – Present',
+          duration: '8 months',
+          desc: 'Architected and shipped production-grade mobile applications. Owned the full lifecycle from planning and development to deployment.',
+          tags: ['React Native', 'Mobile', 'UI/UX']
+        },
+        {
+          role: 'Software Educator',
+          company: 'Tee Education',
+          period: 'Jul 2025 – Present',
+          duration: '9 months',
+          desc: 'Taught fundamental coding skills to students. Led and coordinated a team of 5 educators, driving curriculum consistency.',
+          tags: ['Leadership', 'Teaching', 'Team Lead']
+        }
+      ]
+    },
+    skills: {
+      title: 'Skills',
+      label: '// tech stack',
+      tags: { mobile: 'mobile', lang: 'lang', web: 'web', backend: 'backend', db: 'db', engine: 'engine', design: 'design', devops: 'devops' },
+      also: 'Also excels at:',
+      extra: ['Volleyball (Pro)', 'Basketball (Adv)', 'English', 'Japanese (Upper-Int)', 'Work Under Pressure', 'Team Leadership', 'Communication']
+    },
+    contact: {
+      label: '// let\'s build something',
+      title: 'Open to',
+      titleHighlight: 'Opportunities',
+      desc: 'Ready to contribute from day one. Let\'s connect and explore what we can build together.',
+      footer: '© 2026 — N. Sodbayar — crafted with intent'
+    }
+  }
+};
+
 const SKILLS = [
-  { name: 'React Native', pct: 60, tag: 'mobile', color: 'green' },
-  { name: 'JavaScript', pct: 50, tag: 'lang', color: 'green' },
-  { name: 'Python',      pct: 50, tag: 'lang', color: 'indigo' },
-  { name: 'HTML / CSS',  pct: 60, tag: 'web', color: 'green' },
-  { name: 'Node.js',     pct: 40, tag: 'backend', color: 'indigo' },
-  { name: 'SQL',         pct: 50, tag: 'db', color: 'purple' },
-  { name: 'Unity',       pct: 50, tag: 'engine', color: 'purple' },
-  { name: 'Figma',       pct: 60, tag: 'design', color: 'pink' },
-  { name: 'GitLab',      pct: 50, tag: 'devops', color: 'indigo' },
+  { name: 'React Native', pct: 60, tagKey: 'mobile', color: 'green' },
+  { name: 'JavaScript', pct: 50, tagKey: 'lang', color: 'green' },
+  { name: 'Python',      pct: 50, tagKey: 'lang', color: 'indigo' },
+  { name: 'HTML / CSS',  pct: 60, tagKey: 'web', color: 'green' },
+  { name: 'Node.js',     pct: 40, tagKey: 'backend', color: 'indigo' },
+  { name: 'SQL',         pct: 50, tagKey: 'db', color: 'purple' },
+  { name: 'Unity',       pct: 50, tagKey: 'engine', color: 'purple' },
+  { name: 'Figma',       pct: 60, tagKey: 'design', color: 'pink' },
+  { name: 'GitLab',      pct: 50, tagKey: 'devops', color: 'indigo' },
 ];
 
 const EXPERIENCES = [
-  {
-    role: 'Mobile Engineer',
-    company: 'Omni Capital NBFI LLC',
-    period: 'Aug 2025 – Present',
-    duration: '8 months',
-    desc: 'Architected and shipped production-grade mobile applications. Owned the full lifecycle from planning and development to deployment.',
-    tags: ['React Native', 'Mobile', 'UI/UX'],
-    color: 'green',
-  },
-  {
-    role: 'Software Educator',
-    company: 'Tee Education',
-    period: 'Jul 2025 – Present',
-    duration: '9 months',
-    desc: 'Taught fundamental coding skills to students. Led and coordinated a team of 5 educators, driving curriculum consistency.',
-    tags: ['Leadership', 'Teaching', 'Team Lead'],
-    color: 'indigo',
-  },
+  { color: 'green' },
+  { color: 'indigo' },
 ];
 
 function FadeIn({ children, delay = 0 }) {
@@ -55,6 +172,9 @@ function FadeIn({ children, delay = 0 }) {
 }
 
 export default function Portfolio() {
+  const [lang, setLang] = useState('mn');
+  const t = TRANSLATIONS[lang];
+
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const yParallax = useTransform(scrollYProgress, [0, 1], [0, 180]);
@@ -71,31 +191,58 @@ export default function Portfolio() {
       </div>
 
       {/* ── Nav ── */}
-      <nav className="glass-panel" style={{
+      <nav className="glass-panel flex items-center justify-between md:justify-start gap-4 md:gap-10" style={{
         position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 100, padding: '12px 28px',
-        display: 'flex', alignItems: 'center', gap: 40,
-        borderRadius: 40, maxWidth: 680, width: '90%'
+        zIndex: 100, padding: '12px 20px',
+        borderRadius: 40, maxWidth: 680, width: '95%'
       }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
+        <span className="hidden sm:block" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
           sodbayar.dev
         </span>
-        <span style={{ flex: 1 }} />
-        {['#about', '#work', '#skills', '#contact'].map(href => (
-          <a key={href}
-            href={href}
-            style={{
-              fontFamily: 'var(--font-mono)', fontSize: '0.72rem',
-              color: 'var(--text-secondary)', textDecoration: 'none',
-              textTransform: 'uppercase', letterSpacing: '0.1em',
-              transition: 'color 0.2s'
-            }}
-            onMouseEnter={e => e.target.style.color = 'var(--accent-primary)'}
-            onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}
-          >
-            {href.slice(1)}
-          </a>
-        ))}
+        <span className="sm:hidden" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
+          S.
+        </span>
+        <div className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar py-1 flex-1">
+          {[
+            { label: t.nav.about, href: '#about' },
+            { label: t.nav.work, href: '#work' },
+            { label: t.nav.skills, href: '#skills' },
+            { label: t.nav.contact, href: '#contact' }
+          ].map(({ label, href }) => (
+            <a key={href}
+              href={href}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+                color: 'var(--text-secondary)', textDecoration: 'none',
+                textTransform: 'uppercase', letterSpacing: '0.05em',
+                whiteSpace: 'nowrap',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={e => e.target.style.color = 'var(--accent-primary)'}
+              onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+        
+        {/* Language Toggle */}
+        <button 
+          onClick={() => setLang(lang === 'mn' ? 'en' : 'mn')}
+          className="glass-panel"
+          style={{
+            padding: '6px 12px',
+            fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+            color: 'var(--accent-primary)',
+            border: '1px solid var(--glass-border)',
+            background: 'rgba(110, 231, 183, 0.1)',
+            cursor: 'pointer',
+            borderRadius: '20px',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {lang === 'mn' ? 'EN' : 'MN'}
+        </button>
       </nav>
 
       {/* ── Hero ── */}
@@ -109,9 +256,9 @@ export default function Portfolio() {
             transition={{ duration: 0.8, delay: 0.2 }}
             style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}
           >
-            <span className="badge-status">Available for hire</span>
-            <span className="dev-tag">IT Engineer</span>
-            <span className="dev-tag dev-tag-purple">Ulaanbaatar, MN</span>
+            <span className="badge-status">{t.hero.status}</span>
+            <span className="dev-tag">{t.hero.title}</span>
+            <span className="dev-tag dev-tag-purple">{t.hero.location}</span>
           </motion.div>
 
           {/* Headline */}
@@ -122,15 +269,15 @@ export default function Portfolio() {
               transition={{ duration: 1, delay: 0.3, ease: [0.25, 1, 0.5, 1] }}
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3.5rem, 9vw, 9rem)',
+                fontSize: 'clamp(2.5rem, 12vw, 9rem)',
                 fontWeight: 800,
                 lineHeight: 0.95,
                 letterSpacing: '-0.03em',
                 color: 'var(--text-primary)',
               }}
             >
-              Norovnyam<br />
-              <span className="text-gradient-green">Sodbayar</span>
+              {t.hero.firstName}<br />
+              <span className="text-gradient-green">{t.hero.lastName}</span>
             </motion.h1>
           </div>
 
@@ -147,9 +294,9 @@ export default function Portfolio() {
             }}
           >
             <span style={{ color: 'var(--text-muted)' }}>//</span>{' '}
-            Mobile engineer. Software educator. Perpetual learner.<br/>
+            {t.hero.subtitle}<br/>
             <span style={{ color: 'var(--text-muted)' }}>//</span>{' '}
-            I keep learning every second — hire me and I'll show you.
+            {t.hero.cta}
           </motion.p>
 
           {/* CTA row */}
@@ -160,7 +307,7 @@ export default function Portfolio() {
             style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}
           >
             <a href="#contact" className="btn-glass">
-              <Terminal size={15} /> ./hire-me
+              <Terminal size={15} /> {t.hero.hireMe}
             </a>
             <a href="mailto:ssodko243@gmail.com"
               style={{
@@ -193,7 +340,7 @@ export default function Portfolio() {
             initial={{ opacity: 0, x: 60, rotate: 4 }}
             animate={{ opacity: 1, x: 0, rotate: 3 }}
             transition={{ duration: 1, delay: 1.1, ease: [0.25, 1, 0.5, 1] }}
-            className="glass-terminal"
+            className="glass-terminal hidden lg:block"
             style={{
               position: 'absolute', right: '3vw', top: '22vh',
               width: 'clamp(280px, 28vw, 420px)',
@@ -209,13 +356,13 @@ export default function Portfolio() {
             </div>
             {[
               { line: '$ whoami', color: 'var(--text-secondary)' },
-              { line: '→ Norovnyam Sodbayar', color: 'var(--accent-primary)' },
+              { line: `→ ${t.hero.firstName} ${t.hero.lastName}`, color: 'var(--accent-primary)' },
               { line: '$ cat title.txt', color: 'var(--text-secondary)' },
-              { line: '→ Mobile Engineer', color: 'var(--accent-secondary)' },
+              { line: `→ ${t.hero.terminal.title}`, color: 'var(--accent-secondary)' },
               { line: '$ cat gpa.txt', color: 'var(--text-secondary)' },
-              { line: '→ 3.6 / 4.0 @ NUM', color: 'var(--accent-primary)' },
+              { line: `→ ${t.hero.terminal.gpa}`, color: 'var(--accent-primary)' },
               { line: '$ cat status.txt', color: 'var(--text-secondary)' },
-              { line: '→ Open to opportunities ✅', color: 'var(--accent-tertiary)' },
+              { line: `→ ${t.hero.terminal.status}`, color: 'var(--accent-tertiary)' },
               { line: '█', color: 'var(--accent-primary)', blink: true },
             ].map((item, i) => (
               <div key={i} style={{
@@ -240,26 +387,26 @@ export default function Portfolio() {
       </section>
 
       {/* ── About ── */}
-      <section id="about" style={{ position: 'relative', zIndex: 1, padding: '120px 6vw' }}>
+      <section id="about" className="py-16 md:py-32" style={{ position: 'relative', zIndex: 1, paddingLeft: '6vw', paddingRight: '6vw' }}>
         <FadeIn>
           <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {/* Big quote glass panel */}
-            <div className="glass-elevated" style={{ gridColumn: 'span 2', padding: '56px 60px' }}>
+            <div className="glass-elevated lg:col-span-2 p-8 md:p-14">
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 28 }}>
-                // personal statement
+                {t.about.label}
               </p>
               <p style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.4rem)', fontWeight: 700, lineHeight: 1.35, color: 'var(--text-primary)', maxWidth: 700 }}>
-                "Just looking for a job, but I keep learning in every second. 
-                <span className="text-gradient-green"> So if you hire me, I will show you who I am.</span>"
+                {t.about.quote}
+                <span className="text-gradient-green">{t.about.quoteHighlight}</span>
               </p>
             </div>
 
             {/* Info cards */}
             {[
-              { icon: <GraduationCap size={20} />, label: 'Education', value: 'National Univ. of Mongolia', sub: 'Software Eng. — 3.6 GPA', color: 'green' },
-              { icon: <MapPin size={20} />, label: 'Location', value: 'Chingeltei District', sub: 'Ulaanbaatar, Mongolia', color: 'indigo' },
-              { icon: <Briefcase size={20} />, label: 'Availability', value: 'Open to Hire', sub: '1.8M – 2.1M MNT expectation', color: 'green' },
-              { icon: <Globe size={20} />, label: 'Languages', value: 'EN / JA / MN', sub: 'Intermediate / Upper-Int. / Native', color: 'purple' },
+              { icon: <GraduationCap size={20} />, ...t.about.cards.edu, color: 'green' },
+              { icon: <MapPin size={20} />, ...t.about.cards.loc, color: 'indigo' },
+              { icon: <Briefcase size={20} />, ...t.about.cards.avail, color: 'green' },
+              { icon: <Globe size={20} />, ...t.about.cards.lang, color: 'purple' },
             ].map((card, i) => (
               <FadeIn key={i} delay={i * 0.1}>
                 <div className="glass-panel glass-hover" style={{ padding: '36px 32px', height: '100%' }}>
@@ -284,31 +431,28 @@ export default function Portfolio() {
       </section>
 
       {/* ── Selected Work ── */}
-      <section id="work" style={{ position: 'relative', zIndex: 1, padding: '60px 6vw 120px' }}>
+      <section id="work" className="py-12 md:py-24" style={{ position: 'relative', zIndex: 1, paddingLeft: '6vw', paddingRight: '6vw' }}>
         <FadeIn>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 60 }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800 }}>
-                Work Experience
+                {t.work.title}
               </h2>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>// selected</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.work.label}</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {EXPERIENCES.map((exp, i) => (
+              {t.work.exp.map((exp, i) => (
                 <FadeIn key={i} delay={i * 0.15}>
                   <div
-                    className="glass-panel"
+                    className="glass-panel p-8 md:p-12 flex flex-col md:grid md:grid-cols-[1fr_auto] gap-8 items-start"
                     style={{
-                      padding: '44px 48px',
-                      display: 'grid', gridTemplateColumns: '1fr auto',
-                      gap: 32, alignItems: 'start',
                       transition: 'border-color 0.3s, box-shadow 0.3s',
                       cursor: 'default'
                     }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = exp.color === 'green' ? 'rgba(110,231,183,0.35)' : 'rgba(129,140,248,0.35)';
-                      e.currentTarget.style.boxShadow = exp.color === 'green' ? 'var(--glow-green)' : 'var(--glow-indigo)';
+                      e.currentTarget.style.borderColor = EXPERIENCES[i].color === 'green' ? 'rgba(110,231,183,0.35)' : 'rgba(129,140,248,0.35)';
+                      e.currentTarget.style.boxShadow = EXPERIENCES[i].color === 'green' ? 'var(--glow-green)' : 'var(--glow-indigo)';
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.borderColor = 'var(--glass-border)';
@@ -318,18 +462,18 @@ export default function Portfolio() {
                     <div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
                         {exp.tags.map(t => (
-                          <span key={t} className={`dev-tag${exp.color === 'indigo' ? ' dev-tag-purple' : exp.color === 'pink' ? ' dev-tag-pink' : ''}`}>{t}</span>
+                          <span key={t} className={`dev-tag${EXPERIENCES[i].color === 'indigo' ? ' dev-tag-purple' : ''}`}>{t}</span>
                         ))}
                       </div>
                       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 700, marginBottom: 8 }}>{exp.role}</h3>
-                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: exp.color === 'green' ? 'var(--accent-primary)' : 'var(--accent-secondary)', marginBottom: 20 }}>
+                      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: EXPERIENCES[i].color === 'green' ? 'var(--accent-primary)' : 'var(--accent-secondary)', marginBottom: 20 }}>
                         {exp.company}
                       </p>
                       <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, maxWidth: 540, fontSize: '0.95rem' }}>{exp.desc}</p>
                     </div>
-                    <div style={{ textAlign: 'right', minWidth: 140 }}>
+                    <div className="md:text-right min-w-[140px]">
                       <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 8 }}>{exp.period}</p>
-                      <div className={`dev-tag${exp.color === 'indigo' ? ' dev-tag-purple' : ''}`} style={{ display: 'inline-block' }}>{exp.duration}</div>
+                      <div className={`dev-tag${EXPERIENCES[i].color === 'indigo' ? ' dev-tag-purple' : ''}`} style={{ display: 'inline-block' }}>{exp.duration}</div>
                     </div>
                   </div>
                 </FadeIn>
@@ -340,14 +484,14 @@ export default function Portfolio() {
       </section>
 
       {/* ── Skills ── */}
-      <section id="skills" style={{ position: 'relative', zIndex: 1, padding: '0 6vw 120px' }}>
+      <section id="skills" className="pb-20 md:pb-32" style={{ position: 'relative', zIndex: 1, paddingLeft: '6vw', paddingRight: '6vw' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 60 }}>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800 }}>
-                Skills
+                {t.skills.title}
               </h2>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>// tech stack</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.skills.label}</span>
             </div>
           </FadeIn>
 
@@ -359,7 +503,7 @@ export default function Portfolio() {
                     <div>
                       <p style={{ fontWeight: 600, fontSize: '1rem', marginBottom: 8 }}>{skill.name}</p>
                       <span className={`dev-tag${skill.color === 'indigo' ? ' dev-tag-purple' : skill.color === 'pink' ? ' dev-tag-pink' : ''}`}>
-                        {skill.tag}
+                        {t.skills.tags[skill.tagKey]}
                       </span>
                     </div>
                     <span style={{
@@ -400,9 +544,9 @@ export default function Portfolio() {
             <div className="glass-panel" style={{ marginTop: 32, padding: '36px 40px', display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Trophy size={20} style={{ color: 'var(--accent-amber)', flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Also excels at:</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t.skills.also}</span>
               </div>
-              {['Volleyball (Pro)', 'Basketball (Adv)', 'English', 'Japanese (Upper-Int)', 'Work Under Pressure', 'Team Leadership', 'Communication'].map(s => (
+              {t.skills.extra.map(s => (
                 <span key={s} className="dev-tag dev-tag-purple">{s}</span>
               ))}
             </div>
@@ -411,7 +555,7 @@ export default function Portfolio() {
       </section>
 
       {/* ── Contact ── */}
-      <section id="contact" style={{ position: 'relative', zIndex: 1, padding: '0 6vw 100px' }}>
+      <section id="contact" className="pb-16 md:pb-28" style={{ position: 'relative', zIndex: 1, paddingLeft: '6vw', paddingRight: '6vw' }}>
         <FadeIn>
           <div style={{ maxWidth: 860, margin: '0 auto' }}>
             <div className="glass-elevated"
@@ -425,16 +569,16 @@ export default function Portfolio() {
                 pointerEvents: 'none'
               }} />
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 28 }}>
-                // let's build something
+                {t.contact.label}
               </p>
               <h2 style={{
                 fontFamily: 'var(--font-display)', fontSize: 'clamp(2.2rem, 5vw, 4rem)',
                 fontWeight: 800, marginBottom: 20, lineHeight: 1.1
               }}>
-                Open to <span className="text-gradient-green">Opportunities</span>
+                {t.contact.title} <span className="text-gradient-green">{t.contact.titleHighlight}</span>
               </h2>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, maxWidth: 500, margin: '0 auto 48px', fontSize: '0.95rem' }}>
-                Ready to contribute from day one. Let's connect and explore what we can build together.
+                {t.contact.desc}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'center' }}>
                 <a href="mailto:ssodko243@gmail.com" className="btn-glass">
@@ -455,7 +599,7 @@ export default function Portfolio() {
               fontFamily: 'var(--font-mono)', fontSize: '0.7rem',
               color: 'var(--text-muted)', letterSpacing: '0.1em'
             }}>
-              © 2026 — N. Sodbayar — crafted with intent
+              {t.contact.footer}
             </p>
           </div>
         </FadeIn>
