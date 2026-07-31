@@ -49,48 +49,30 @@ export default function Portfolio() {
           </a>
         </header>
 
-        <motion.div className="portrait-wrap" style={{ y: portraitY }}>
-          <div className="portrait-halo" />
-          <div className="portrait-shape" aria-label="Abstract chrome orb visual">
-            <div className="orb-ring orb-ring-one" />
-            <div className="orb-ring orb-ring-two" />
-            <div className="orb-core"><span /></div>
-            <div className="orb-glint" />
-          </div>
+        <motion.div className="hero-proof" style={{ y: portraitY }}>
+          <div className="proof-header"><span>SELECTED SIGNALS</span><span>2025—26</span></div>
+          <div className="proof-number">03</div>
+          <div className="proof-label">production apps<br />shipped</div>
+          <div className="proof-rule" />
+          <div className="proof-row"><span>01</span><strong>React Native</strong><small>mobile</small></div>
+          <div className="proof-row"><span>02</span><strong>Information Technology</strong><small>degree</small></div>
+          <div className="proof-row"><span>03</span><strong>JLPT N2</strong><small>Japanese</small></div>
+          <div className="proof-footer"><span>BUILD / TEACH / PLAY</span><b>↗</b></div>
         </motion.div>
-
-        <Fish className="fish-one" />
-        <Fish className="fish-two" />
-        <Fish className="fish-three" />
-        <Fish className="fish-four" />
-        <Fish className="fish-five" />
 
         <motion.div className="title-system" style={{ y: textY }}>
           <p className="system-label">001 / VISUAL ARCHIVE / 感情の記録</p>
+          <p className="hero-kicker">Mobile engineer <span>×</span> visual maker</p>
           <h1>
             SODKO
             <br />
-            <span>VISUAL</span>
+            <span>BUILDS</span>
           </h1>
-          <p className="title-sub">Mobile engineering / code / visual experiments</p>
+          <p className="title-sub">I build digital products with a visual point of view.</p>
         </motion.div>
 
-        {annotations.map((item) => (
-          <motion.article
-            key={item.className}
-            className={`poster-note ${item.className}`}
-            initial={{ opacity: 0, filter: 'blur(12px)', y: 16 }}
-            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-            transition={{ duration: 0.9, delay: 0.25 }}
-          >
-            <span />
-            <p>{item.text}</p>
-            <strong>{item.accent}</strong>
-          </motion.article>
-        ))}
-
         <div className="mini-stack">
-          {fragments.map((item) => (
+          {['Mobile apps', 'Web interfaces', 'Visual systems'].map((item) => (
             <span key={item}>{item}</span>
           ))}
         </div>
@@ -116,18 +98,17 @@ export default function Portfolio() {
           <p className="system-label">002 / SHORT PROFILE</p>
           <span className="section-index">[ 03—06 ]</span>
         </div>
-        <h2>Graphic design.<br />Code. Visual emotion.</h2>
+        <h2>Ideas into<br />experiences.</h2>
         <div className="profile-grid">
           <p className="lead-copy">
-            I build visual worlds that feel a little unexpected. My work moves between graphic
-            design, frontend code, image editing and motion — always looking for the point where
-            a strong idea becomes something you can see, feel and interact with.
+            I turn ideas into useful, expressive digital experiences. My work sits between mobile
+            engineering, frontend code and visual design — from production apps to interfaces that
+            have a clear mood and a memorable point of view.
           </p>
           <p className="body-copy">
-            I like making things from a blank canvas: a poster with a clear attitude, a sharp image
-            edit, a short reel that catches attention, or a web interface that feels alive. I care
-            about composition, type, color and the small details that make a digital experience
-            memorable.
+            I enjoy the full process: understanding the problem, shaping the visual direction,
+            building the interaction and polishing the details. I care about clarity, speed,
+            composition and the small decisions that make technology feel human.
           </p>
         </div>
 
@@ -151,12 +132,12 @@ export default function Portfolio() {
         </div>
 
         <div className="work-section">
-          <p className="system-label">003 / WHAT I DO</p>
+            <p className="system-label">003 / WHAT I BUILD</p>
           <div className="work-grid">
             {[
-              ['01', 'Graphic design', 'Posters, campaign visuals and visual systems with a distinct point of view.'],
-              ['02', 'Image + motion', 'Edited images, reel visuals and short-form experiments built to move.'],
-              ['03', 'Code / UI', 'Responsive web interfaces where design and interaction work as one.'],
+              ['01', 'Mobile products', 'React Native applications shaped for real users, real flows and production release.'],
+              ['02', 'Interfaces', 'Responsive web experiences where visual direction and interaction work as one.'],
+              ['03', 'Visual systems', 'Posters, edits and motion experiments that give an idea a recognisable voice.'],
             ].map(([number, title, copy]) => (
               <article className="work-card" key={number}>
                 <span>{number}</span>
@@ -171,10 +152,10 @@ export default function Portfolio() {
         <div className="life-section">
           <div>
             <p className="system-label">004 / OFF THE CLOCK</p>
-            <h3>Curious by default.</h3>
+            <h3>Always<br />exploring.</h3>
           </div>
           <div className="life-copy">
-            <p>When I am away from a screen, I stay active and curious. I play volleyball and basketball at an advanced level, enjoy table tennis and football, ride a bike, play chess, and keep collecting the visual details that later become ideas.</p>
+            <p>Curiosity is part of how I work. I learn by trying, teaching and staying active: playing volleyball and basketball, challenging friends at table tennis or chess, riding a bike, and noticing the visual details that can become the next idea.</p>
             <div className="interest-tags">
               <span>volleyball</span><span>basketball</span><span>table tennis</span><span>football</span><span>cycling</span><span>chess</span>
             </div>
